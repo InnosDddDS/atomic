@@ -1,1264 +1,1837 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#060912">
-<title>Барашек Only</title>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тихий сад</title>
 <style>
-:root {
-  --bg:       #060912;
-  --bg2:      #0a0f1c;
-  --card:     #0e1525;
-  --card2:    #121b30;
-  --border:   rgba(91,207,255,0.1);
-  --border2:  rgba(91,207,255,0.2);
-  --accent:   #5bcfff;
-  --accent2:  #3ab8f0;
-  --green:    #2effa0;
-  --green2:   #00e87a;
-  --red:      #ff4d73;
-  --red2:     #ff2255;
-  --yellow:   #ffd95b;
-  --muted:    #3a4d6e;
-  --muted2:   #5a7090;
-  --text:     #c8dff5;
-  --text2:    #8aaac8;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bot: env(safe-area-inset-bottom, 0px);
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Quicksand:wght@400;600;700&family=Caveat:wght@600;700&display=swap');
+
+:root{
+  --sky-top:#cdb7da;
+  --sky-mid:#f0b9c4;
+  --sky-bottom:#f8dcc6;
+  --sakura-deep:#e98fb0;
+  --sakura-mid:#f3b9cf;
+  --sakura-light:#fbdde9;
+  --cat-fur:#cdb7a0;
+  --cat-fur-dark:#a98a6e;
+  --cat-cream:#fff8ee;
+  --ink:#5b4034;
+  --ink-soft:#8a6a57;
+  --gold:#f4d58d;
+  --card-bg:#fffaf4;
 }
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-html {
-  height: 100%;
-  background: var(--bg);
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Quicksand',sans-serif;
+  color:var(--ink);
+  overflow:hidden;
+  height:100dvh;
+  width:100%;
 }
 
-body {
-  min-height: 100%;
-  min-height: 100dvh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Unbounded', sans-serif;
-  overflow-x: hidden;
-  overscroll-behavior: none;
-}
-
-/* ── ANIMATED BG ── */
-.bg-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  animation: orbDrift 20s ease-in-out infinite;
-}
-.bg-orb:nth-child(1) {
-  width: 340px; height: 340px;
-  background: radial-gradient(circle, rgba(91,207,255,0.06) 0%, transparent 70%);
-  top: -100px; left: -80px;
-  animation-duration: 22s;
-}
-.bg-orb:nth-child(2) {
-  width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(46,255,160,0.05) 0%, transparent 70%);
-  bottom: 100px; right: -60px;
-  animation-duration: 18s;
-  animation-delay: -8s;
-}
-.bg-orb:nth-child(3) {
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(91,207,255,0.04) 0%, transparent 70%);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  animation-duration: 25s;
-  animation-delay: -4s;
-}
-
-@keyframes orbDrift {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33%      { transform: translate(20px, -30px) scale(1.05); }
-  66%      { transform: translate(-15px, 20px) scale(0.95); }
-}
-
-#bg-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* ── GRID OVERLAY ── */
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(91,207,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(91,207,255,0.015) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-/* ── SHELL ── */
-.shell {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 430px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: calc(var(--safe-top) + 16px) 16px calc(var(--safe-bot) + 24px);
-  gap: 14px;
-}
-
-/* ── TOP BAR ── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  padding: 0 2px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, rgba(91,207,255,0.15), rgba(46,255,160,0.08));
-  border: 1px solid rgba(91,207,255,0.2);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.logo-text {
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  line-height: 1.1;
-}
-.logo-text .accent { color: var(--accent); }
-.logo-sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
-  color: var(--muted2);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.time-chip {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  background: rgba(91,207,255,0.08);
-  border: 1px solid rgba(91,207,255,0.15);
-  padding: 6px 13px;
-  border-radius: 30px;
-  letter-spacing: 0.05em;
-}
-
-.signal-dots {
-  display: flex;
-  gap: 3px;
-  align-items: flex-end;
-}
-.signal-dot {
-  width: 4px;
-  border-radius: 1px;
-  background: var(--muted);
-  transition: background 0.4s;
-}
-.signal-dot:nth-child(1) { height: 6px; }
-.signal-dot:nth-child(2) { height: 10px; }
-.signal-dot:nth-child(3) { height: 14px; }
-.signal-dot:nth-child(4) { height: 18px; }
-.signal-dots.good .signal-dot { background: var(--green); }
-.signal-dots.ok .signal-dot:nth-child(1),
-.signal-dots.ok .signal-dot:nth-child(2),
-.signal-dots.ok .signal-dot:nth-child(3) { background: var(--yellow); }
-.signal-dots.bad .signal-dot:nth-child(1),
-.signal-dots.bad .signal-dot:nth-child(2) { background: var(--red); }
-
-/* ── HERO SECTION ── */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 8px 0 4px;
-  flex-shrink: 0;
-}
-
-.sheep-stage {
-  position: relative;
-  width: 160px;
-  height: 160px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(91,207,255,0.1);
-  animation: ringPulse 3.5s ease-in-out infinite;
-}
-.ring:nth-child(1) { width: 160px; height: 160px; animation-delay: 0s; }
-.ring:nth-child(2) { width: 124px; height: 124px; border-color: rgba(91,207,255,0.16); animation-delay: 0.7s; }
-.ring:nth-child(3) { width: 92px; height: 92px; border-color: rgba(91,207,255,0.24); animation-delay: 1.4s; }
-
-@keyframes ringPulse {
-  0%,100% { opacity: 0.5; transform: scale(1); }
-  50%      { opacity: 1; transform: scale(1.04); }
-}
-
-.sheep-core {
-  position: relative;
-  z-index: 2;
-  animation: sheepFloat 5s ease-in-out infinite;
-  filter: drop-shadow(0 8px 24px rgba(91,207,255,0.15));
-}
-@keyframes sheepFloat {
-  0%,100% { transform: translateY(0) rotate(0deg); }
-  40%      { transform: translateY(-7px) rotate(-1deg); }
-  60%      { transform: translateY(-5px) rotate(1deg); }
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  border-radius: 30px;
-  transition: all 0.4s ease;
-  margin-top: 10px;
-}
-.status-pill .pill-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.status-pill.on    { background: rgba(46,255,160,0.12); border: 1px solid rgba(46,255,160,0.35); color: var(--green); }
-.status-pill.off   { background: rgba(255,77,115,0.1);  border: 1px solid rgba(255,77,115,0.3); color: var(--red); }
-.status-pill.check { background: rgba(255,217,91,0.1);  border: 1px solid rgba(255,217,91,0.3); color: var(--yellow); animation: pillPulse 0.8s ease-in-out infinite; }
-.status-pill.on .pill-dot    { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.status-pill.off .pill-dot   { background: var(--red); }
-.status-pill.check .pill-dot { background: var(--yellow); animation: pillPulse 0.6s ease-in-out infinite; }
-@keyframes pillPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-
-/* ── VPN CARD ── */
-.vpn-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 16px 18px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.4s;
-  flex-shrink: 0;
-}
-.vpn-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  transition: background 0.4s;
-}
-.vpn-card.on  { border-color: rgba(46,255,160,0.2); }
-.vpn-card.off { border-color: rgba(255,77,115,0.2); }
-.vpn-card.check { border-color: rgba(255,217,91,0.2); }
-.vpn-card.on::after  { background: linear-gradient(90deg, transparent 10%, var(--green) 50%, transparent 90%); }
-.vpn-card.off::after { background: linear-gradient(90deg, transparent 10%, var(--red) 50%, transparent 90%); }
-.vpn-card.check::after { background: linear-gradient(90deg, transparent 10%, var(--yellow) 50%, transparent 90%); }
-
-.vpn-icon-wrap {
-  width: 44px; height: 44px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  transition: all 0.4s;
-  flex-shrink: 0;
-}
-.vpn-card.on  .vpn-icon-wrap { background: rgba(46,255,160,0.12); border: 1px solid rgba(46,255,160,0.25); }
-.vpn-card.off .vpn-icon-wrap { background: rgba(255,77,115,0.1);  border: 1px solid rgba(255,77,115,0.2); }
-.vpn-card.check .vpn-icon-wrap { background: rgba(255,217,91,0.1); border: 1px solid rgba(255,217,91,0.2); }
-
-.vpn-body {}
-.vpn-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted2); letter-spacing:0.12em; text-transform:uppercase; }
-.vpn-value { font-size:15px; font-weight:900; margin-top:2px; transition:color 0.4s; line-height:1.2; }
-.vpn-card.on .vpn-value    { color: var(--green); }
-.vpn-card.off .vpn-value   { color: var(--red); }
-.vpn-card.check .vpn-value { color: var(--yellow); }
-.vpn-ip {
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px; color:var(--muted2);
-  margin-top:3px;
-  display:flex; align-items:center; gap:5px;
-}
-.vpn-flag { font-size: 12px; }
-
-.refresh-btn-sm {
-  background: rgba(91,207,255,0.07);
-  border: 1px solid rgba(91,207,255,0.18);
-  color: var(--accent);
-  border-radius: 12px;
-  padding: 9px 13px;
-  font-family:'Unbounded',sans-serif;
-  font-size:9px; font-weight:700;
-  cursor:pointer;
-  transition:all 0.2s;
-  display:flex; align-items:center; gap:5px;
-  white-space:nowrap;
-  flex-shrink:0;
-  letter-spacing:0.03em;
-}
-.refresh-btn-sm:hover { background:rgba(91,207,255,0.14); border-color:rgba(91,207,255,0.3); }
-.refresh-btn-sm:active { transform:scale(0.92); }
-
-/* ── METRICS GRID ── */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.metric-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 15px 15px 13px;
-  position: relative;
-  overflow: hidden;
-}
-.metric-card::before {
-  content:'';
-  position:absolute;
-  top:0; left:0; right:0; height:2px;
-  border-radius:18px 18px 0 0;
-}
-.metric-card.net::before  { background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent); }
-.metric-card.vpns::before { background: linear-gradient(90deg, transparent, var(--green) 50%, transparent); }
-.metric-card.ping::before { background: linear-gradient(90deg, transparent, var(--yellow) 50%, transparent); }
-.metric-card.score-net::before { background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent); }
-.metric-card.score-vpn::before { background: linear-gradient(90deg, transparent, var(--green) 50%, transparent); }
-
-.mc-label {
-  font-family:'JetBrains Mono',monospace;
-  font-size:8px; color:var(--muted2);
-  letter-spacing:0.12em; text-transform:uppercase;
-  display:flex; align-items:center; gap:5px;
-  margin-bottom:6px;
-}
-.mc-icon { font-size:11px; }
-
-.mc-val {
-  font-size:28px; font-weight:900;
-  line-height:1;
-  transition:all 0.5s;
-}
-.mc-unit {
-  font-size:10px; font-weight:400;
-  color:var(--muted2);
-  font-family:'JetBrains Mono',monospace;
-}
-.metric-card.net  .mc-val { color: var(--accent); }
-.metric-card.vpns .mc-val { color: var(--green); }
-.metric-card.ping .mc-val { color: var(--yellow); transition:color 0.4s; }
-
-.mc-sub {
-  font-family:'JetBrains Mono',monospace;
-  font-size:8px; color:var(--muted2);
-  margin-top:5px;
-}
-
-/* Score bars */
-.bars-wrap {
-  display:flex; gap:2.5px;
-  align-items:flex-end; height:24px;
-  margin-top:6px;
-}
-.bar {
-  flex:1; border-radius:2px;
-  min-height:3px;
-  transition: height 0.5s cubic-bezier(.34,1.56,.64,1), background 0.4s;
-}
-
-.score-big {
-  font-size:30px; font-weight:900; line-height:1;
-}
-.score-denom { font-size:13px; color:var(--muted2); font-weight:400; }
-
-/* ── PING HISTORY CARD ── */
-.ping-history-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 15px 16px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.ping-history-card::before {
-  content:'';
-  position:absolute;
-  top:0; left:0; right:0; height:2px;
-  background: linear-gradient(90deg, transparent, var(--yellow) 50%, transparent);
-}
-
-.ph-top {
-  display:flex; align-items:flex-start; justify-content:space-between;
-  margin-bottom:12px;
-}
-.ph-left {}
-.ph-label { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--muted2); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:3px; }
-.ph-val   { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--yellow); transition:color 0.4s; line-height:1; }
-
-.ping-tags {
-  display:flex; gap:6px;
-}
-.ping-tag {
-  font-family:'JetBrains Mono',monospace;
-  font-size:8px; font-weight:600;
-  padding:4px 8px; border-radius:8px;
-  border:1px solid;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-}
-.ping-tag.good { background:rgba(46,255,160,0.1); border-color:rgba(46,255,160,0.25); color:var(--green); }
-.ping-tag.bad  { background:rgba(255,77,115,0.1);  border-color:rgba(255,77,115,0.25); color:var(--red); }
-.ping-tag.avg  { background:rgba(255,217,91,0.1);  border-color:rgba(255,217,91,0.25); color:var(--yellow); }
-
-.ping-graph-wrap {
-  display:flex; gap:3px;
-  align-items:flex-end; height:40px;
-}
-.pg-bar {
-  flex:1; border-radius:3px 3px 0 0;
-  min-height:3px;
-  transition: height 0.4s cubic-bezier(.34,1.56,.64,1), background 0.4s;
+.scene{
   position:relative;
+  height:100dvh;
+  width:100%;
+  overflow:hidden;
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 55%,var(--sky-bottom) 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
 }
 
-/* ── LOCATION CARD ── */
-.location-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 15px 16px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
+@media (prefers-reduced-motion:no-preference){
+  .scene{ animation:skyBreathe 18s ease-in-out infinite; }
 }
-.location-card::before {
-  content:'';
+@keyframes skyBreathe{
+  0%,100%{ filter:saturate(1) brightness(1); }
+  50%{ filter:saturate(1.05) brightness(1.03); }
+}
+
+.label{
   position:absolute;
-  top:0; left:0; right:0; height:2px;
-  background: linear-gradient(90deg, transparent, rgba(91,207,255,0.5) 50%, transparent);
-}
-
-.lc-top {
-  font-family:'JetBrains Mono',monospace;
-  font-size:8px; color:var(--muted2);
-  letter-spacing:0.12em; text-transform:uppercase;
-  margin-bottom:10px;
-}
-.lc-row {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.lc-item {}
-.lc-key { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:2px; }
-.lc-val { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text); font-weight:600; }
-.lc-val.mono-ip { letter-spacing:0.05em; }
-
-/* ── MAIN BTN ── */
-.main-btn {
-  width:100%; padding:16px;
-  background: linear-gradient(135deg, rgba(91,207,255,0.1), rgba(46,255,160,0.06));
-  border: 1px solid rgba(91,207,255,0.25);
-  border-radius:18px;
-  color:var(--accent);
-  font-family:'Unbounded',sans-serif;
-  font-size:11px; font-weight:900;
-  letter-spacing:0.06em; text-transform:uppercase;
-  cursor:pointer;
-  transition:all 0.25s;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  flex-shrink:0;
-  position:relative; overflow:hidden;
-}
-.main-btn::before {
-  content:'';
-  position:absolute; inset:0;
-  background: linear-gradient(135deg, rgba(91,207,255,0.08), rgba(46,255,160,0.04));
-  opacity:0; transition:opacity 0.2s;
-}
-.main-btn:hover::before { opacity:1; }
-.main-btn:hover { border-color:rgba(91,207,255,0.4); box-shadow:0 0 30px rgba(91,207,255,0.1); }
-.main-btn:active { transform:scale(0.97); }
-.main-btn:disabled { opacity:0.5; cursor:not-allowed; }
-
-.btn-spinner { display:inline-block; font-size:18px; }
-.main-btn.loading .btn-spinner { animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* ── FOOTER ── */
-.footer {
+  top:max(22px, env(safe-area-inset-top));
+  left:0;right:0;
   text-align:center;
-  font-family:'JetBrains Mono',monospace;
-  font-size:8px; color:var(--muted);
-  letter-spacing:0.08em;
-  padding-bottom:4px;
-  flex-shrink:0;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:15px;
+  letter-spacing:.12em;
+  color:var(--ink-soft);
+  opacity:.75;
+  z-index:6;
+  user-select:none;
 }
 
-/* ── TOAST ── */
-.toast {
-  position:fixed; bottom:calc(var(--safe-bot) + 80px); left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:var(--card2); border:1px solid var(--border2);
-  border-radius:14px; padding:10px 18px;
-  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text);
-  white-space:nowrap; z-index:100;
-  opacity:0; transition:all 0.35s cubic-bezier(.34,1.56,.64,1);
+/* hint под котиком */
+.tap-hint {
+  position:absolute;
+  bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
+  left:0; right:0;
+  text-align:center;
+  font-family:'Quicksand',sans-serif;
+  font-size:12px;
+  color:var(--ink-soft);
+  opacity:0.6;
+  z-index:6;
+  pointer-events:none;
+  animation: hintPulse 3s ease-in-out infinite;
+}
+@keyframes hintPulse{
+  0%,100%{opacity:0.4;}
+  50%{opacity:0.75;}
+}
+
+/* ---------- sky decoration ---------- */
+.sky-deco{ position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+
+.moon{
+  position:absolute;
+  top:7%; right:9%;
+  width:clamp(46px, 9vw, 76px);
+  height:clamp(46px, 9vw, 76px);
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 32%, #fffdf6, #fbe9c8 60%, #f3d9a3 100%);
+  box-shadow:0 0 30px 14px rgba(252,232,184,.45), 0 0 60px 30px rgba(252,232,184,.18);
+}
+@media (prefers-reduced-motion:no-preference){
+  .moon{ animation:moonGlow 6s ease-in-out infinite; }
+}
+@keyframes moonGlow{
+  0%,100%{ box-shadow:0 0 30px 14px rgba(252,232,184,.4), 0 0 60px 30px rgba(252,232,184,.16); }
+  50%{ box-shadow:0 0 38px 18px rgba(252,232,184,.55), 0 0 72px 36px rgba(252,232,184,.24); }
+}
+
+.star{
+  position:absolute;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 5px 1px rgba(255,255,255,.8);
+}
+@media (prefers-reduced-motion:no-preference){
+  .star{ animation:starTwinkle 3.4s ease-in-out infinite; }
+}
+@keyframes starTwinkle{
+  0%,100%{ opacity:.2; transform:scale(.7); }
+  50%{ opacity:1; transform:scale(1.2); }
+}
+
+.cloud{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(7px);
+  opacity:.4;
+  background:radial-gradient(circle, #ffffff, rgba(255,255,255,0) 70%);
+}
+.cloud-1{ width:160px; height:46px; top:14%; left:-20%; animation:driftCloud 95s linear infinite; }
+.cloud-2{ width:120px; height:36px; top:22%; left:-40%; animation:driftCloud 130s linear infinite; animation-delay:-30s; opacity:.3; }
+.cloud-3{ width:90px; height:30px; top:9%; left:-60%; animation:driftCloud 160s linear infinite; animation-delay:-70s; opacity:.28; }
+@keyframes driftCloud{ from{ transform:translateX(0); } to{ transform:translateX(160vw); } }
+
+.ground-glow{
+  position:absolute;
+  bottom:6%;
+  left:50%;
+  width:min(70vw, 460px);
+  height:120px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(244,213,141,.35), rgba(244,213,141,0) 70%);
+  z-index:1;
   pointer-events:none;
 }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ── LOADING OVERLAY ── */
-.loading-overlay {
-  position:fixed; inset:0; z-index:50;
-  background:var(--bg);
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:16px;
-  transition:opacity 0.5s;
+/* ---------- illustration ---------- */
+.illustration-wrap{
+  position:relative;
+  width:min(92vw, 520px);
+  margin-top:auto;
+  z-index:2;
+  cursor:pointer;
 }
-.loading-overlay.hidden { opacity:0; pointer-events:none; }
-.loading-sheep { font-size:56px; animation:sheepFloat 2s ease-in-out infinite; }
-.loading-text {
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px; color:var(--muted2);
-  letter-spacing:0.15em; text-transform:uppercase;
+.illustration{
+  display:block;
+  width:100%;
+  height:auto;
+  transform-origin:50% 95%;
 }
-.loading-bar-wrap {
-  width:160px; height:2px;
-  background:rgba(91,207,255,0.1); border-radius:2px; overflow:hidden;
+@media (prefers-reduced-motion:no-preference){
+  .tree-sway{ animation:sway 7s ease-in-out infinite; transform-origin:20% 100%; }
+  .cat-breathe{ animation:breathe 4.5s ease-in-out infinite; transform-origin:50% 80%; }
+  .blade{ animation:bladeSway 5s ease-in-out infinite; transform-origin:50% 100%; }
 }
-.loading-bar {
-  height:100%; width:0%;
-  background:linear-gradient(90deg, var(--accent), var(--green));
-  border-radius:2px;
-  transition:width 0.3s ease;
+@keyframes sway{
+  0%,100%{ transform:rotate(-0.6deg); }
+  50%{ transform:rotate(0.6deg); }
 }
-
-/* ── SKELETON ── */
-.skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-  border-radius:6px;
+@keyframes breathe{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.012); }
 }
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes bladeSway{
+  0%,100%{ transform:rotate(-3deg); }
+  50%{ transform:rotate(3deg); }
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 360px) {
-  .shell { padding-left:12px; padding-right:12px; gap:11px; }
-  .mc-val { font-size:22px; }
-  .score-big { font-size:24px; }
+/* ХВОСТИК - отдельный анимированный элемент */
+.tail-anim {
+  animation: tailWag 3.8s ease-in-out infinite;
+  transform-origin: 468px 565px;
+}
+@keyframes tailWag {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(6deg); }
+  75%  { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion:reduce){ .tail-anim{ animation:none; } }
+
+/* ЖИВЫЕ ГЛАЗКИ */
+.eye-group { cursor:pointer; }
+
+/* Зрачок — моргание через clipPath высоты */
+.pupil-l, .pupil-r {
+  animation: pupilBlink 5s ease-in-out infinite;
+  transform-origin: center;
+}
+.pupil-r { animation-delay: 0.05s; }
+@keyframes pupilBlink {
+  0%,42%,58%,100% { transform: scaleY(1); }
+  48%,52% { transform: scaleY(0.08); }
 }
 
-@media (min-width: 600px) {
-  .shell { padding-top:32px; }
+/* Блик */
+.eye-shine { pointer-events:none; }
+
+/* Котик при тапе — лёгкий прыжок */
+.cat-bounce {
+  animation: catJump 0.5s ease;
+}
+@keyframes catJump {
+  0%{ transform: scale(1) translateY(0); }
+  40%{ transform: scale(1.04) translateY(-6px); }
+  100%{ transform: scale(1) translateY(0); }
+}
+
+/* ---------- РЕЧЕВОЕ ОБЛАЧКО ---------- */
+.speech-bubble {
+  position:absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-60%) translateY(-100%);
+  background: rgba(255, 250, 248, 0.97);
+  border: 2px solid var(--sakura-mid);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-family:'Caveat', cursive;
+  font-size: clamp(15px, 4.5vw, 19px);
+  color: var(--ink);
+  white-space: nowrap;
+  box-shadow: 0 6px 22px rgba(233,143,176,.28);
+  pointer-events:none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: min(75vw, 280px);
+  white-space: normal;
+  text-align: center;
+  line-height:1.3;
+}
+.speech-bubble::after {
+  content:'';
+  position:absolute;
+  bottom:-12px;
+  left: 58%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top:8px solid var(--sakura-mid);
+}
+.speech-bubble::before {
+  content:'';
+  position:absolute;
+  bottom:-9px;
+  left: 58%;
+  transform:translateX(-50%);
+  border:5px solid transparent;
+  border-top:7px solid rgba(255,250,248,0.97);
+  z-index:1;
+}
+.speech-bubble.visible {
+  opacity:1;
+  transform: translateX(-60%) translateY(calc(-100% - 8px));
+}
+
+/* ---------- petals ---------- */
+.petals{ position:absolute; inset:0; pointer-events:none; z-index:3; overflow:hidden; }
+.petal{
+  position:absolute;
+  top:-5%;
+  border-radius:0 60% 0 60%;
+  animation-name:fall, drift;
+  animation-timing-function:linear, ease-in-out;
+  animation-iteration-count:infinite, infinite;
+}
+.petal--far{
+  background:linear-gradient(135deg,var(--sakura-light),var(--sakura-mid));
+  opacity:.55;
+  filter:blur(1px);
+}
+.petal--near{
+  background:linear-gradient(135deg,var(--sakura-mid),var(--sakura-deep));
+  opacity:.9;
+}
+@keyframes fall{
+  from{ transform:translateY(-10vh) rotate(0deg); }
+  to{ transform:translateY(110vh) rotate(360deg); }
+}
+@keyframes drift{
+  0%,100%{ margin-left:0; }
+  50%{ margin-left:30px; }
+}
+@media (prefers-reduced-motion:reduce){ .petal{ display:none; } }
+
+/* ---------- fireflies ---------- */
+.fireflies{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.firefly{
+  position:absolute;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 6px 2px rgba(244,213,141,.7);
+  animation:fireflyFloat 5s ease-in-out infinite;
+}
+@keyframes fireflyFloat{
+  0%,100%{ opacity:.15; transform:scale(.8) translateY(0) translateX(0); }
+  50%{ opacity:.9; transform:scale(1.15) translateY(-10px) translateX(4px); }
+}
+
+.vignette{
+  position:absolute; inset:0;
+  z-index:4;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 45%, rgba(91,64,52,.22) 100%);
+}
+
+/* ---------- letter button ---------- */
+.letter-btn{
+  position:relative;
+  z-index:7;
+  margin:0 auto clamp(20px, 4vh, 44px);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 26px;
+  border:none;
+  border-radius:999px;
+  background:rgba(255,250,244,.88);
+  backdrop-filter:blur(6px);
+  box-shadow:0 6px 22px rgba(180,110,130,.28), 0 0 0 1px rgba(255,255,255,.5) inset;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:16px;
+  color:var(--ink);
+  cursor:pointer;
+  transition:transform .25s ease, box-shadow .25s ease;
+  animation:glow 3.6s ease-in-out infinite;
+}
+.letter-btn:hover, .letter-btn:focus-visible{
+  transform:translateY(-2px) scale(1.02);
+  box-shadow:0 10px 28px rgba(180,110,130,.38), 0 0 0 1px rgba(255,255,255,.6) inset;
+}
+@keyframes glow{
+  0%,100%{ box-shadow:0 6px 22px rgba(180,110,130,.22), 0 0 0 1px rgba(255,255,255,.5) inset; }
+  50%{ box-shadow:0 6px 26px rgba(233,143,176,.45), 0 0 0 1px rgba(255,255,255,.6) inset; }
+}
+.letter-btn svg{ width:22px; height:22px; flex:none; }
+@media (prefers-reduced-motion:no-preference){
+  .letter-btn svg{ animation:envWiggle 4s ease-in-out infinite; transform-origin:50% 70%; }
+}
+@keyframes envWiggle{
+  0%,100%{ transform:rotate(0deg); }
+  50%{ transform:rotate(-4deg); }
+}
+
+/* ---------- overlay & card ---------- */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(91,64,52,.25);
+  backdrop-filter:blur(4px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .35s ease;
+  z-index:50;
+  padding:20px;
+}
+.overlay.visible{ opacity:1; visibility:visible; }
+
+.card{
+  position:relative;
+  width:min(420px, 100%);
+  background:
+    repeating-linear-gradient(135deg, rgba(91,64,52,.025) 0 2px, transparent 2px 10px),
+    var(--card-bg);
+  border-radius:22px;
+  padding:34px 28px 30px;
+  text-align:center;
+  box-shadow:0 24px 60px rgba(91,64,52,.25);
+  transform:translateY(14px) scale(.97);
+  transition:transform .35s ease;
+  overflow:hidden;
+}
+.overlay.visible .card{ transform:translateY(0) scale(1); }
+
+.card-decor{
+  position:absolute;
+  bottom:10px; right:14px;
+  width:38px; height:38px;
+  opacity:.14;
+  pointer-events:none;
+}
+
+.card-question{ transition:opacity .25s ease, transform .25s ease; }
+.card-question.fade-out{ opacity:0; transform:translateY(-6px) scale(.98); }
+.card-question p{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:24px;
+  margin:6px 0 26px;
+  color:var(--ink);
+}
+.card-question .envelope-mini{
+  width:64px; height:64px;
+  margin:0 auto 14px;
+}
+@media (prefers-reduced-motion:no-preference){
+  .card-question .envelope-mini{ animation:miniWiggle 3.6s ease-in-out infinite; transform-origin:50% 75%; }
+}
+@keyframes miniWiggle{
+  0%,100%{ transform:rotate(0deg); }
+  50%{ transform:rotate(-3deg); }
+}
+.card-actions{ display:flex; gap:14px; justify-content:center; }
+.btn{
+  font-family:'Quicksand',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  padding:11px 28px;
+  border-radius:999px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:transform .2s ease, opacity .2s ease;
+}
+.btn:hover{ transform:translateY(-1px); }
+.btn-yes{ background:var(--sakura-deep); color:#fff; box-shadow:0 8px 18px rgba(233,143,176,.45); }
+.btn-no{ background:transparent; border-color:var(--sakura-mid); color:var(--ink-soft); }
+
+.card-letter{ display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; }
+.card-letter .seal{ width:46px; height:46px; margin-bottom:10px; opacity:0; }
+.letter-text{ font-family:'Caveat',cursive; font-size:34px; line-height:1.35; color:var(--ink); margin:4px 0 10px; opacity:0; }
+.flourish{ width:120px; height:20px; margin:4px auto 14px; opacity:0; color:var(--sakura-deep); }
+.heart-tail{ display:inline-block; animation:beat 1.4s ease-in-out infinite; }
+@keyframes beat{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.18); } }
+
+.card-letter.reveal .seal{ animation:sealPop .6s ease forwards; }
+.card-letter.reveal .letter-text{ animation:fadeUp .6s .15s ease forwards; }
+.card-letter.reveal .flourish{ animation:fadeUp .6s .35s ease forwards; }
+.card-letter.reveal .close-btn{ animation:fadeUp .5s .5s ease forwards; opacity:0; }
+@keyframes sealPop{
+  0%{ transform:scale(.4) rotate(-15deg); opacity:0; }
+  60%{ transform:scale(1.15) rotate(5deg); opacity:1; }
+  100%{ transform:scale(1) rotate(0); opacity:1; }
+}
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+
+.close-btn{
+  margin-top:4px;
+  background:none;
+  border:none;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  color:var(--ink-soft);
+  cursor:pointer;
+  text-decoration:underline;
+  text-decoration-color:var(--sakura-mid);
+}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  bottom:max(26px, env(safe-area-inset-bottom));
+  left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:rgba(91,64,52,.92);
+  color:#fff8f2;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  padding:12px 20px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease;
+  z-index:60;
+  max-width:88vw;
+  text-align:center;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+.burst{ position:fixed; inset:0; pointer-events:none; z-index:55; }
+.burst-heart{ position:absolute; bottom:-5%; font-size:18px; opacity:.9; animation:floatUp linear forwards; }
+@keyframes floatUp{ to{ transform:translateY(-115vh) translateX(var(--bx,0px)) rotate(20deg); opacity:0; } }
+
+@media (max-width:480px){
+  .letter-text{ font-size:28px; }
+  .card{ padding:28px 20px 24px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Loading Screen -->
-<div class="loading-overlay" id="loading-screen">
-  <div class="loading-sheep">🐑</div>
-  <div class="loading-text" id="loading-text">Инициализация...</div>
-  <div class="loading-bar-wrap">
-    <div class="loading-bar" id="loading-bar"></div>
-  </div>
-</div>
-
-<!-- BG -->
-<div class="bg-layer">
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-</div>
-<div class="grid-overlay"></div>
-<canvas id="bg-canvas"></canvas>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- Main App -->
-<div class="shell" id="app" style="opacity:0; transition:opacity 0.5s;">
-
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="22" height="22" viewBox="0 0 42 42" fill="none">
-          <circle cx="21" cy="20" r="11" fill="#5bcfff" opacity="0.2"/>
-          <circle cx="14" cy="18" r="7" fill="#5bcfff" opacity="0.25"/>
-          <circle cx="28" cy="18" r="7" fill="#5bcfff" opacity="0.25"/>
-          <circle cx="21" cy="14" r="6.5" fill="#5bcfff" opacity="0.3"/>
-          <ellipse cx="21" cy="26" rx="7" ry="6" fill="#c8d8f0"/>
-          <circle cx="18.5" cy="25" r="1.3" fill="#1a1f2e"/>
-          <circle cx="23.5" cy="25" r="1.3" fill="#1a1f2e"/>
-          <circle cx="19" cy="24.5" r="0.5" fill="white"/>
-          <circle cx="24" cy="24.5" r="0.5" fill="white"/>
-          <ellipse cx="21" cy="27.5" rx="1.5" ry="1" fill="#5bcfff" opacity="0.9"/>
-        </svg>
-      </div>
-      <div>
-        <div class="logo-text">Барашек <span class="accent">Only</span></div>
-        <div class="logo-sub">VPN · Network Checker</div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <div class="signal-dots" id="signal-dots">
-        <div class="signal-dot"></div>
-        <div class="signal-dot"></div>
-        <div class="signal-dot"></div>
-        <div class="signal-dot"></div>
-      </div>
-      <div class="time-chip" id="clock">00:00</div>
-    </div>
+<div class="scene">
+  <div class="sky-deco" id="skyDeco">
+    <div class="moon"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
   </div>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="sheep-stage">
-      <div class="ring"></div>
-      <div class="ring"></div>
-      <div class="ring"></div>
-      <div class="sheep-core">
-        <svg width="96" height="96" viewBox="0 0 80 80" fill="none">
-          <!-- Fluffy body -->
-          <circle cx="40" cy="36" r="18" fill="#c8d8f0"/>
-          <circle cx="26" cy="30" r="13" fill="#dce8fc"/>
-          <circle cx="54" cy="30" r="13" fill="#dce8fc"/>
-          <circle cx="34" cy="22" r="12" fill="#dce8fc"/>
-          <circle cx="46" cy="22" r="12" fill="#dce8fc"/>
-          <circle cx="40" cy="18" r="11" fill="#dce8fc"/>
-          <!-- Face -->
-          <ellipse cx="40" cy="48" rx="13" ry="11" fill="#b8cce8"/>
-          <!-- Eyes -->
-          <circle cx="36" cy="46" r="2.4" fill="#1a1f2e"/>
-          <circle cx="44" cy="46" r="2.4" fill="#1a1f2e"/>
-          <circle cx="36.8" cy="45.2" r="0.9" fill="white"/>
-          <circle cx="44.8" cy="45.2" r="0.9" fill="white"/>
-          <!-- Nose -->
-          <ellipse cx="40" cy="50" rx="2.8" ry="1.8" fill="#5bcfff" opacity="0.8"/>
-          <!-- Ears -->
-          <ellipse cx="27" cy="46" rx="4.5" ry="6" fill="#b8cce8" transform="rotate(-15 27 46)"/>
-          <ellipse cx="53" cy="46" rx="4.5" ry="6" fill="#b8cce8" transform="rotate(15 53 46)"/>
-          <!-- Legs -->
-          <rect x="32" y="57" width="5" height="10" rx="2.5" fill="#9ab8d8"/>
-          <rect x="43" y="57" width="5" height="10" rx="2.5" fill="#9ab8d8"/>
-          <!-- Shine -->
-          <circle cx="29" cy="20" r="3.5" fill="white" opacity="0.15"/>
-        </svg>
-      </div>
-    </div>
-    <div class="status-pill check" id="status-pill">
-      <span class="pill-dot"></span>
-      <span id="status-text">Проверяем...</span>
-    </div>
+  <div class="ground-glow"></div>
+  <div class="label">тихий сад · вечер</div>
+
+  <div class="fireflies" id="fireflies"></div>
+  <div class="petals" id="petals"></div>
+
+  <div class="illustration-wrap" id="catWrap">
+
+    <!-- Речевое облачко -->
+    <div class="speech-bubble" id="speechBubble"></div>
+
+    <svg class="illustration" viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Котёнок отдыхает под цветущей сакурой">
+      <!-- ground -->
+      <ellipse cx="400" cy="585" rx="360" ry="34" fill="#e7c9b6" opacity="0.55"/>
+      <path d="M0,605 Q200,580 400,600 T800,595 V620 H0 Z" fill="#dab48e" opacity="0.5"/>
+
+      <!-- grass blades -->
+      <g stroke="#9fae7a" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.55">
+        <path class="blade" d="M560,600 Q565,575 558,558"/>
+        <path class="blade" d="M578,602 Q585,580 580,562" style="animation-delay:-1.2s"/>
+        <path class="blade" d="M600,604 Q605,582 598,566" style="animation-delay:-2.4s"/>
+        <path class="blade" d="M120,608 Q126,588 119,572" style="animation-delay:-0.6s"/>
+        <path class="blade" d="M745,602 Q750,580 743,564" style="animation-delay:-1.8s"/>
+      </g>
+
+      <!-- tree -->
+      <g class="tree-sway">
+        <path d="M150,610 C140,520 165,470 150,430 C140,400 175,390 185,360 C170,330 190,300 215,290"
+              fill="none" stroke="#7a5240" stroke-width="16" stroke-linecap="round"/>
+        <path d="M185,420 C150,400 120,410 95,395" fill="none" stroke="#7a5240" stroke-width="10" stroke-linecap="round"/>
+        <path d="M170,460 C200,450 225,460 250,445" fill="none" stroke="#7a5240" stroke-width="9" stroke-linecap="round"/>
+
+        <g opacity="0.95">
+          <circle cx="120" cy="380" r="58" fill="var(--sakura-light)"/>
+          <circle cx="190" cy="345" r="70" fill="var(--sakura-mid)"/>
+          <circle cx="260" cy="370" r="56" fill="var(--sakura-light)"/>
+          <circle cx="95" cy="320" r="46" fill="var(--sakura-mid)"/>
+          <circle cx="220" cy="290" r="52" fill="var(--sakura-deep)" opacity="0.55"/>
+          <circle cx="155" cy="300" r="50" fill="var(--sakura-light)"/>
+          <circle cx="290" cy="320" r="40" fill="var(--sakura-mid)"/>
+          <circle cx="60" cy="370" r="34" fill="var(--sakura-light)"/>
+        </g>
+        <g fill="var(--sakura-deep)" opacity="0.5">
+          <circle cx="130" cy="360" r="3"/><circle cx="170" cy="330" r="3"/>
+          <circle cx="210" cy="360" r="3"/><circle cx="240" cy="300" r="3"/>
+          <circle cx="100" cy="330" r="3"/><circle cx="270" cy="345" r="3"/>
+          <circle cx="150" cy="380" r="3"/>
+        </g>
+      </g>
+
+      <!-- resting kitten -->
+      <g class="cat-breathe" id="catGroup">
+
+        <ellipse cx="420" cy="600" rx="48" ry="10" fill="#5b4034" opacity="0.12"/>
+
+        <!-- АНИМИРОВАННЫЙ ХВОСТИК -->
+        <g class="tail-anim">
+          <path d="M468,565 C545,560 565,495 515,455 C495,438 463,452 466,478 C468,500 495,500 500,480"
+                fill="var(--cat-fur)"/>
+          <path d="M515,455 C495,438 463,452 466,478" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" opacity="0.4"/>
+          <circle cx="473" cy="467" r="12" fill="#fff"/>
+          <!-- полоски на хвосте -->
+          <path d="M490,465 C500,462 508,466 512,470" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+          <path d="M478,490 C487,488 494,492 497,496" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        </g>
+
+        <!-- body -->
+        <ellipse cx="408" cy="558" rx="60" ry="48" fill="var(--cat-fur)"/>
+        <ellipse cx="410" cy="576" rx="36" ry="24" fill="var(--cat-cream)"/>
+
+        <!-- head -->
+        <circle cx="368" cy="513" r="42" fill="var(--cat-fur)"/>
+        <ellipse cx="366" cy="526" rx="20" ry="14" fill="var(--cat-cream)"/>
+
+        <!-- ears -->
+        <path d="M338,488 L320,440 L368,476 Z" fill="var(--cat-fur)"/>
+        <path d="M340,480 L330,455 L358,474 Z" fill="var(--sakura-mid)" opacity="0.7"/>
+        <path d="M396,480 L412,434 L424,478 Z" fill="var(--cat-fur)"/>
+        <path d="M400,476 L411,452 L418,476 Z" fill="var(--sakura-mid)" opacity="0.7"/>
+
+        <!-- soft tabby strokes -->
+        <g stroke="var(--cat-fur-dark)" stroke-width="3" stroke-linecap="round" opacity="0.3" fill="none">
+          <path d="M345,478 q4,-14 14,-18"/>
+          <path d="M395,478 q-4,-14 -14,-18"/>
+          <path d="M388,532 q10,8 4,22"/>
+          <path d="M404,528 q10,10 2,24"/>
+        </g>
+
+        <!-- ЖИВЫЕ ГЛАЗА -->
+        <!-- Левый глаз -->
+        <g id="leftEye">
+          <!-- белок -->
+          <ellipse cx="356" cy="510" rx="10" ry="9" fill="white"/>
+          <!-- радужка -->
+          <ellipse cx="356" cy="510" rx="7.5" ry="7.5" fill="#7ab8a0"/>
+          <!-- зрачок с анимацией моргания -->
+          <ellipse class="pupil-l" cx="356" cy="510" rx="4" ry="5.5" fill="#2a1a10"/>
+          <!-- блик 1 -->
+          <circle cx="353" cy="507" r="1.8" fill="white" opacity="0.9"/>
+          <!-- блик 2 -->
+          <circle cx="359" cy="512" r="1" fill="white" opacity="0.6"/>
+        </g>
+        <!-- Правый глаз -->
+        <g id="rightEye">
+          <!-- белок -->
+          <ellipse cx="382" cy="510" rx="10" ry="9" fill="white"/>
+          <!-- радужка -->
+          <ellipse cx="382" cy="510" rx="7.5" ry="7.5" fill="#7ab8a0"/>
+          <!-- зрачок -->
+          <ellipse class="pupil-r" cx="382" cy="510" rx="4" ry="5.5" fill="#2a1a10"/>
+          <!-- блик 1 -->
+          <circle cx="379" cy="507" r="1.8" fill="white" opacity="0.9"/>
+          <!-- блик 2 -->
+          <circle cx="385" cy="512" r="1" fill="white" opacity="0.6"/>
+        </g>
+
+        <!-- nose -->
+        <path d="M362,528 q6,-4 12,0 q-2,7 -6,7 q-4,0 -6,-7 Z" fill="var(--sakura-deep)"/>
+
+        <!-- рот -->
+        <path d="M368,535 q-4,4 -7,3" fill="none" stroke="var(--cat-fur-dark)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <path d="M368,535 q4,4 7,3" fill="none" stroke="var(--cat-fur-dark)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+
+        <!-- whiskers -->
+        <g stroke="#cbb6a6" stroke-width="1.4" opacity="0.7">
+          <path d="M335,528 q-22,-2 -34,2"/>
+          <path d="M335,534 q-22,6 -32,12"/>
+          <path d="M401,528 q22,-2 34,2"/>
+          <path d="M401,534 q22,6 32,12"/>
+        </g>
+
+        <!-- cheeks -->
+        <circle cx="344" cy="522" r="6" fill="var(--sakura-mid)" opacity="0.55"/>
+        <circle cx="392" cy="522" r="6" fill="var(--sakura-mid)" opacity="0.55"/>
+
+        <!-- paws -->
+        <ellipse cx="380" cy="590" rx="15" ry="10" fill="var(--cat-cream)"/>
+        <ellipse cx="426" cy="590" rx="15" ry="10" fill="var(--cat-cream)"/>
+      </g>
+
+      <g fill="var(--sakura-mid)" opacity="0.85">
+        <ellipse cx="430" cy="540" rx="6" ry="4" transform="rotate(30 430 540)"/>
+        <ellipse cx="330" cy="555" rx="5" ry="3.5" transform="rotate(-20 330 555)"/>
+        <ellipse cx="470" cy="600" rx="6" ry="4" transform="rotate(60 470 600)"/>
+      </g>
+
+      <g opacity="0.8">
+        <circle cx="640" cy="560" r="4" fill="#fff"/>
+        <circle cx="652" cy="555" r="4" fill="#fff"/>
+        <circle cx="646" cy="566" r="4" fill="#fff"/>
+        <circle cx="648" cy="560" r="3" fill="var(--gold)"/>
+        <circle cx="710" cy="580" r="4" fill="#fff"/>
+        <circle cx="720" cy="575" r="4" fill="#fff"/>
+        <circle cx="715" cy="586" r="4" fill="#fff"/>
+        <circle cx="716" cy="580" r="3" fill="var(--gold)"/>
+      </g>
+    </svg>
   </div>
 
-  <!-- VPN CARD -->
-  <div class="vpn-card check" id="vpn-card">
-    <div class="vpn-icon-wrap" id="vpn-icon">🔍</div>
-    <div class="vpn-body">
-      <div class="vpn-label">Статус подключения</div>
-      <div class="vpn-value" id="vpn-value">Анализируем...</div>
-      <div class="vpn-ip" id="vpn-ip-row">
-        <span id="vpn-flag"></span>
-        <span id="vpn-ip-text">—</span>
-      </div>
-    </div>
-    <button class="refresh-btn-sm" onclick="checkAll()" id="refresh-sm">
-      🔄 Обновить
-    </button>
-  </div>
+  <div class="tap-hint">нажми на котика 🐾</div>
 
-  <!-- SPEED METRICS -->
-  <div class="metrics-grid">
-    <div class="metric-card net">
-      <div class="mc-label"><span class="mc-icon">🌐</span> Интернет</div>
-      <div class="mc-val" id="net-speed">—<span class="mc-unit"> Мб/с</span></div>
-      <div class="mc-sub" id="net-sub">Ожидание...</div>
-    </div>
-    <div class="metric-card vpns">
-      <div class="mc-label"><span class="mc-icon">🔒</span> VPN скорость</div>
-      <div class="mc-val" id="vpn-speed">—<span class="mc-unit"> Мб/с</span></div>
-      <div class="mc-sub" id="vpn-sub">Ожидание...</div>
-    </div>
-  </div>
-
-  <!-- SCORE CARDS -->
-  <div class="metrics-grid">
-    <div class="metric-card score-net">
-      <div class="mc-label"><span class="mc-icon">⭐</span> Оценка сети</div>
-      <div class="score-big" id="net-score" style="color:var(--accent)">—<span class="score-denom">/10</span></div>
-      <div class="bars-wrap" id="net-bars"></div>
-    </div>
-    <div class="metric-card score-vpn">
-      <div class="mc-label"><span class="mc-icon">🛡️</span> Оценка VPN</div>
-      <div class="score-big" id="vpn-score" style="color:var(--green)">—<span class="score-denom">/10</span></div>
-      <div class="bars-wrap" id="vpn-bars"></div>
-    </div>
-  </div>
-
-  <!-- PING HISTORY -->
-  <div class="ping-history-card">
-    <div class="ph-top">
-      <div class="ph-left">
-        <div class="ph-label">⚡ Пинг до сервера</div>
-        <div class="ph-val" id="ping-val">— ms</div>
-      </div>
-      <div class="ping-tags" id="ping-tags"></div>
-    </div>
-    <div class="ping-graph-wrap" id="ping-graph"></div>
-  </div>
-
-  <!-- LOCATION INFO -->
-  <div class="location-card" id="location-card" style="display:none">
-    <div class="lc-top">📍 Информация о соединении</div>
-    <div class="lc-row" id="location-grid"></div>
-  </div>
-
-  <!-- MAIN BUTTON -->
-  <button class="main-btn" id="main-btn" onclick="checkAll()">
-    <span class="btn-spinner" id="btn-spinner">🐑</span>
-    <span id="btn-text">Проверить снова</span>
+  <button class="letter-btn" id="letterBtn" type="button" aria-haspopup="dialog">
+    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="10" width="40" height="28" rx="4" fill="var(--sakura-light)" stroke="var(--sakura-deep)" stroke-width="2"/>
+      <path d="M4,12 L24,30 L44,12" fill="none" stroke="var(--sakura-deep)" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="24" cy="24" r="5" fill="var(--sakura-deep)"/>
+      <path d="M24,21 c-1.6,-2 -5,-0.6 -3,2 c1,1.2 3,2.8 3,2.8 s2,-1.6 3,-2.8 c2,-2.6 -1.4,-4 -3,-2 Z" fill="#fff"/>
+    </svg>
+    <span>Тебе пришло письмо</span>
   </button>
-
-  <!-- FOOTER -->
-  <div class="footer">Барашек Only · v2.0 · Данные не сохраняются</div>
-
 </div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Письмо">
+  <div class="card">
+    <svg class="card-decor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="24" cy="30" rx="11" ry="9" fill="var(--ink)"/>
+      <ellipse cx="12" cy="18" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="22" cy="12" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="34" cy="14" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="40" cy="22" rx="4.5" ry="5.5" fill="var(--ink)"/>
+    </svg>
+
+    <div class="card-question" id="cardQuestion">
+      <svg class="envelope-mini" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="10" width="40" height="28" rx="4" fill="var(--sakura-light)" stroke="var(--sakura-deep)" stroke-width="2"/>
+        <path d="M4,12 L24,30 L44,12" fill="none" stroke="var(--sakura-deep)" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      <p>Открыть письмо?</p>
+      <div class="card-actions">
+        <button class="btn btn-yes" id="btnYes">Да</button>
+        <button class="btn btn-no" id="btnNo">Нет</button>
+      </div>
+    </div>
+
+    <div class="card-letter" id="cardLetter" hidden>
+      <svg class="seal" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" fill="var(--sakura-deep)"/>
+        <path d="M24,16 c-3,-4 -11,-1.5 -7,4.5 c2.4,3 7,6.5 7,6.5 s4.6,-3.5 7,-6.5 c4,-6 -4,-8.5 -7,-4.5 Z" fill="#fff"/>
+      </svg>
+      <p class="letter-text">Ты самый любимый котик<br>на свете,<br>я всегда рядом,<br>мой кроль <span class="heart-tail">♥</span></p>
+      <svg class="flourish" viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M5,10 C35,2 45,18 60,10 C75,2 85,18 115,10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="60" cy="6" r="2.4" fill="currentColor"/>
+      </svg>
+      <button class="close-btn" id="closeBtn" type="button">закрыть</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="burst" id="burst"></div>
 
 <script>
-// ── CANVAS PARTICLES ──
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-let dots = [];
+(function(){
+  // Лепестки
+  var petalsHost = document.getElementById('petals');
+  var nFar = window.innerWidth < 600 ? 10 : 16;
+  var nNear = window.innerWidth < 600 ? 8 : 12;
+  function makePetal(kind){
+    var p = document.createElement('div');
+    p.className = 'petal ' + kind;
+    var left = Math.random()*100;
+    var size = kind === 'petal--far' ? (6+Math.random()*5) : (9+Math.random()*8);
+    var fallDur = kind === 'petal--far' ? (14+Math.random()*10) : (8+Math.random()*8);
+    var driftDur = 3 + Math.random()*3;
+    var delay = Math.random()*14;
+    p.style.left = left + 'vw';
+    p.style.width = size+'px';
+    p.style.height = size+'px';
+    p.style.animationDuration = fallDur+'s, '+driftDur+'s';
+    p.style.animationDelay = (-delay)+'s, '+(Math.random()*2)+'s';
+    petalsHost.appendChild(p);
+  }
+  for (var i=0;i<nFar;i++) makePetal('petal--far');
+  for (var i2=0;i2<nNear;i2++) makePetal('petal--near');
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-function initDots() {
-  dots = [];
-  const n = Math.min(40, Math.floor(canvas.width * canvas.height / 18000));
-  for (let i = 0; i < n; i++) {
-    dots.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.2 + 0.2,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: (Math.random() - 0.5) * 0.2,
-      o: Math.random() * 0.3 + 0.05,
+  // Светлячки
+  var fireHost = document.getElementById('fireflies');
+  for (var j=0;j<14;j++){
+    var f = document.createElement('div');
+    f.className = 'firefly';
+    f.style.left = (Math.random()*100)+'vw';
+    f.style.top = (35+Math.random()*55)+'vh';
+    f.style.animationDelay = (Math.random()*4)+'s';
+    f.style.animationDuration = (4+Math.random()*3)+'s';
+    fireHost.appendChild(f);
+  }
+
+  // Звёзды
+  var skyDeco = document.getElementById('skyDeco');
+  for (var k=0;k<13;k++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = (Math.random()*100)+'vw';
+    s.style.top = (2+Math.random()*34)+'vh';
+    s.style.animationDelay = (Math.random()*3.4)+'s';
+    skyDeco.appendChild(s);
+  }
+
+  // ========== РЕЧЕВЫЕ ФРАЗОЧКИ ==========
+  var phrases = [
+    'Мяур, мама я люблю тебя 🐾',
+    'Ты такая милашка ✨',
+    'Спасибо, что ты есть! 💕',
+    'Мама это ты! И ты прекрасна! 🌸',
+    'Я так люблю тебя 💗',
+    'Оии! Мяруру ярярряммямямя 😸',
+    'Папа всегда рядом 🐈'
+  ];
+  var phraseIndex = 0;
+  var bubbleTimer = null;
+  var bubble = document.getElementById('speechBubble');
+  var catWrap = document.getElementById('catWrap');
+  var catGroup = document.getElementById('catGroup');
+  var tapping = false;
+
+  catWrap.addEventListener('click', function(e){
+    // Не срабатывать если нажали на кнопку письма
+    if (e.target.closest('.letter-btn')) return;
+    showPhrase();
+  });
+  catWrap.addEventListener('touchend', function(e){
+    if (e.target.closest('.letter-btn')) return;
+    e.preventDefault();
+    showPhrase();
+  }, {passive:false});
+
+  function showPhrase(){
+    if (tapping) return;
+    tapping = true;
+    setTimeout(function(){ tapping = false; }, 400);
+
+    // Показываем фразу
+    var text = phrases[phraseIndex];
+    phraseIndex = (phraseIndex + 1) % phrases.length;
+    bubble.textContent = text;
+    bubble.classList.add('visible');
+
+    // Анимация котика
+    catGroup.classList.remove('cat-bounce');
+    void catGroup.offsetWidth; // reflow
+    catGroup.classList.add('cat-bounce');
+
+    // Прячем облачко через 2.8с
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(function(){
+      bubble.classList.remove('visible');
+    }, 2800);
+
+    // Мигание при тапе
+    triggerBlink();
+  }
+
+  // Принудительное моргание при тапе
+  function triggerBlink(){
+    var pupils = document.querySelectorAll('.pupil-l, .pupil-r');
+    pupils.forEach(function(p){
+      p.style.animation = 'none';
+      p.style.transform = 'scaleY(0.08)';
+      setTimeout(function(){
+        p.style.transform = '';
+        setTimeout(function(){
+          p.style.animation = '';
+        }, 120);
+      }, 140);
     });
   }
-}
-function drawCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  dots.forEach(d => {
-    d.x += d.vx; d.y += d.vy;
-    if (d.x < 0 || d.x > canvas.width) d.vx *= -1;
-    if (d.y < 0 || d.y > canvas.height) d.vy *= -1;
-    ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(91,207,255,${d.o})`;
-    ctx.fill();
-  });
-  requestAnimationFrame(drawCanvas);
-}
-resizeCanvas(); initDots(); drawCanvas();
-window.addEventListener('resize', () => { resizeCanvas(); initDots(); });
 
-// ── CLOCK ──
-function updateClock() {
-  const n = new Date();
-  document.getElementById('clock').textContent =
-    n.getHours().toString().padStart(2,'0') + ':' +
-    n.getMinutes().toString().padStart(2,'0');
-}
-updateClock();
-setInterval(updateClock, 1000);
+  // ========== ПИСЬМО ==========
+  var overlay = document.getElementById('overlay');
+  var letterBtn = document.getElementById('letterBtn');
+  var cardQuestion = document.getElementById('cardQuestion');
+  var cardLetter = document.getElementById('cardLetter');
+  var btnYes = document.getElementById('btnYes');
+  var btnNo = document.getElementById('btnNo');
+  var closeBtn = document.getElementById('closeBtn');
+  var toast = document.getElementById('toast');
+  var burst = document.getElementById('burst');
+  var toastTimer;
 
-// ── TOAST ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ── PING GRAPH ──
-const pingHistory = [];
-function initPingGraph() {
-  const g = document.getElementById('ping-graph');
-  g.innerHTML = '';
-  for (let i = 0; i < 14; i++) {
-    const b = document.createElement('div');
-    b.className = 'pg-bar';
-    b.style.height = '3px';
-    b.style.background = 'rgba(255,255,255,0.06)';
-    g.appendChild(b);
+  function resetCard(){
+    cardQuestion.hidden = false;
+    cardQuestion.classList.remove('fade-out');
+    cardLetter.hidden = true;
+    cardLetter.classList.remove('reveal');
   }
-}
-initPingGraph();
-
-function updatePingGraph(ms) {
-  pingHistory.push(ms);
-  if (pingHistory.length > 14) pingHistory.shift();
-  const bars = document.querySelectorAll('.pg-bar');
-  const max = Math.max(...pingHistory, 1);
-  bars.forEach((b, i) => {
-    const idx = pingHistory.length - 14 + i;
-    const val = idx >= 0 ? pingHistory[idx] : 0;
-    const h = val > 0 ? Math.max(3, Math.round((val / max) * 36)) : 3;
-    b.style.height = h + 'px';
-    if (val === 0) {
-      b.style.background = 'rgba(255,255,255,0.05)';
-      b.style.opacity = '0.4';
-    } else {
-      b.style.background = val < 50 ? 'var(--green)' : val < 120 ? 'var(--yellow)' : 'var(--red)';
-      b.style.opacity = i === 13 ? '1' : '0.45';
+  function openOverlay(){
+    resetCard();
+    overlay.classList.add('visible');
+  }
+  function closeOverlay(){
+    overlay.classList.remove('visible');
+  }
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function heartBurst(){
+    var count = window.innerWidth < 600 ? 10 : 16;
+    var glyphs = ['♥','♥','✿'];
+    for (var k2=0;k2<count;k2++){
+      var h = document.createElement('div');
+      h.className = 'burst-heart';
+      h.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+      h.style.left = (10+Math.random()*80)+'vw';
+      h.style.setProperty('--bx', (Math.random()*60-30)+'px');
+      h.style.color = Math.random() > 0.5 ? '#e98fb0' : '#f4d58d';
+      h.style.animationDuration = (3.5+Math.random()*2)+'s';
+      burst.appendChild(h);
+      (function(el){ setTimeout(function(){ el.remove(); }, 6000); })(h);
     }
+  }
+
+  letterBtn.addEventListener('click', openOverlay);
+
+  btnYes.addEventListener('click', function(){
+    cardQuestion.classList.add('fade-out');
+    setTimeout(function(){
+      cardQuestion.hidden = true;
+      cardLetter.hidden = false;
+      cardLetter.classList.add('reveal');
+      heartBurst();
+    }, 260);
   });
 
-  // Ping tags
-  if (pingHistory.length >= 2) {
-    const min = Math.min(...pingHistory.filter(x => x > 0));
-    const max2 = Math.max(...pingHistory);
-    const tagsEl = document.getElementById('ping-tags');
-    tagsEl.innerHTML = `
-      <div class="ping-tag good">min ${min}ms</div>
-      <div class="ping-tag ${max2 > 120 ? 'bad' : 'avg'}">max ${max2}ms</div>
-    `;
+  btnNo.addEventListener('click', function(){
+    closeOverlay();
+    showToast('Хорошо, я подожду тебя 🐾');
+  });
+
+  closeBtn.addEventListener('click', closeOverlay);
+
+  overlay.addEventListener('click', function(e){
+    if (e.target === overlay) closeOverlay();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeOverlay();
+  });
+
+  // Скрываем hint после первого тапа
+  var hint = document.querySelector('.tap-hint');
+  catWrap.addEventListener('click', function(){
+    if (hint) { hint.style.opacity = '0'; hint.style.transition = 'opacity 0.5s'; }
+  }, {once:true});
+
+})();
+</script>
+</body>
+</html>cat > /home/claude/cat_love_v2.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тихий сад</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Quicksand:wght@400;600;700&family=Caveat:wght@600;700&display=swap');
+
+:root{
+  --sky-top:#cdb7da;
+  --sky-mid:#f0b9c4;
+  --sky-bottom:#f8dcc6;
+  --sakura-deep:#e98fb0;
+  --sakura-mid:#f3b9cf;
+  --sakura-light:#fbdde9;
+  --cat-fur:#cdb7a0;
+  --cat-fur-dark:#a98a6e;
+  --cat-cream:#fff8ee;
+  --ink:#5b4034;
+  --ink-soft:#8a6a57;
+  --gold:#f4d58d;
+  --card-bg:#fffaf4;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Quicksand',sans-serif;
+  color:var(--ink);
+  overflow:hidden;
+  height:100dvh;
+  width:100%;
+}
+
+.scene{
+  position:relative;
+  height:100dvh;
+  width:100%;
+  overflow:hidden;
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 55%,var(--sky-bottom) 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+@media (prefers-reduced-motion:no-preference){
+  .scene{ animation:skyBreathe 18s ease-in-out infinite; }
+}
+@keyframes skyBreathe{
+  0%,100%{ filter:saturate(1) brightness(1); }
+  50%{ filter:saturate(1.05) brightness(1.03); }
+}
+
+.label{
+  position:absolute;
+  top:max(22px, env(safe-area-inset-top));
+  left:0;right:0;
+  text-align:center;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:15px;
+  letter-spacing:.12em;
+  color:var(--ink-soft);
+  opacity:.75;
+  z-index:6;
+  user-select:none;
+}
+
+/* hint под котиком */
+.tap-hint {
+  position:absolute;
+  bottom: max(80px, calc(env(safe-area-inset-bottom) + 70px));
+  left:0; right:0;
+  text-align:center;
+  font-family:'Quicksand',sans-serif;
+  font-size:12px;
+  color:var(--ink-soft);
+  opacity:0.6;
+  z-index:6;
+  pointer-events:none;
+  animation: hintPulse 3s ease-in-out infinite;
+}
+@keyframes hintPulse{
+  0%,100%{opacity:0.4;}
+  50%{opacity:0.75;}
+}
+
+/* ---------- sky decoration ---------- */
+.sky-deco{ position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+
+.moon{
+  position:absolute;
+  top:7%; right:9%;
+  width:clamp(46px, 9vw, 76px);
+  height:clamp(46px, 9vw, 76px);
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 32%, #fffdf6, #fbe9c8 60%, #f3d9a3 100%);
+  box-shadow:0 0 30px 14px rgba(252,232,184,.45), 0 0 60px 30px rgba(252,232,184,.18);
+}
+@media (prefers-reduced-motion:no-preference){
+  .moon{ animation:moonGlow 6s ease-in-out infinite; }
+}
+@keyframes moonGlow{
+  0%,100%{ box-shadow:0 0 30px 14px rgba(252,232,184,.4), 0 0 60px 30px rgba(252,232,184,.16); }
+  50%{ box-shadow:0 0 38px 18px rgba(252,232,184,.55), 0 0 72px 36px rgba(252,232,184,.24); }
+}
+
+.star{
+  position:absolute;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 5px 1px rgba(255,255,255,.8);
+}
+@media (prefers-reduced-motion:no-preference){
+  .star{ animation:starTwinkle 3.4s ease-in-out infinite; }
+}
+@keyframes starTwinkle{
+  0%,100%{ opacity:.2; transform:scale(.7); }
+  50%{ opacity:1; transform:scale(1.2); }
+}
+
+.cloud{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(7px);
+  opacity:.4;
+  background:radial-gradient(circle, #ffffff, rgba(255,255,255,0) 70%);
+}
+.cloud-1{ width:160px; height:46px; top:14%; left:-20%; animation:driftCloud 95s linear infinite; }
+.cloud-2{ width:120px; height:36px; top:22%; left:-40%; animation:driftCloud 130s linear infinite; animation-delay:-30s; opacity:.3; }
+.cloud-3{ width:90px; height:30px; top:9%; left:-60%; animation:driftCloud 160s linear infinite; animation-delay:-70s; opacity:.28; }
+@keyframes driftCloud{ from{ transform:translateX(0); } to{ transform:translateX(160vw); } }
+
+.ground-glow{
+  position:absolute;
+  bottom:6%;
+  left:50%;
+  width:min(70vw, 460px);
+  height:120px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(244,213,141,.35), rgba(244,213,141,0) 70%);
+  z-index:1;
+  pointer-events:none;
+}
+
+/* ---------- illustration ---------- */
+.illustration-wrap{
+  position:relative;
+  width:min(92vw, 520px);
+  margin-top:auto;
+  z-index:2;
+  cursor:pointer;
+}
+.illustration{
+  display:block;
+  width:100%;
+  height:auto;
+  transform-origin:50% 95%;
+}
+@media (prefers-reduced-motion:no-preference){
+  .tree-sway{ animation:sway 7s ease-in-out infinite; transform-origin:20% 100%; }
+  .cat-breathe{ animation:breathe 4.5s ease-in-out infinite; transform-origin:50% 80%; }
+  .blade{ animation:bladeSway 5s ease-in-out infinite; transform-origin:50% 100%; }
+}
+@keyframes sway{
+  0%,100%{ transform:rotate(-0.6deg); }
+  50%{ transform:rotate(0.6deg); }
+}
+@keyframes breathe{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.012); }
+}
+@keyframes bladeSway{
+  0%,100%{ transform:rotate(-3deg); }
+  50%{ transform:rotate(3deg); }
+}
+
+/* ХВОСТИК - отдельный анимированный элемент */
+.tail-anim {
+  animation: tailWag 3.8s ease-in-out infinite;
+  transform-origin: 468px 565px;
+}
+@keyframes tailWag {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(6deg); }
+  75%  { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion:reduce){ .tail-anim{ animation:none; } }
+
+/* ЖИВЫЕ ГЛАЗКИ */
+.eye-group { cursor:pointer; }
+
+/* Зрачок — моргание через clipPath высоты */
+.pupil-l, .pupil-r {
+  animation: pupilBlink 5s ease-in-out infinite;
+  transform-origin: center;
+}
+.pupil-r { animation-delay: 0.05s; }
+@keyframes pupilBlink {
+  0%,42%,58%,100% { transform: scaleY(1); }
+  48%,52% { transform: scaleY(0.08); }
+}
+
+/* Блик */
+.eye-shine { pointer-events:none; }
+
+/* Котик при тапе — лёгкий прыжок */
+.cat-bounce {
+  animation: catJump 0.5s ease;
+}
+@keyframes catJump {
+  0%{ transform: scale(1) translateY(0); }
+  40%{ transform: scale(1.04) translateY(-6px); }
+  100%{ transform: scale(1) translateY(0); }
+}
+
+/* ---------- РЕЧЕВОЕ ОБЛАЧКО ---------- */
+.speech-bubble {
+  position:absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-60%) translateY(-100%);
+  background: rgba(255, 250, 248, 0.97);
+  border: 2px solid var(--sakura-mid);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-family:'Caveat', cursive;
+  font-size: clamp(15px, 4.5vw, 19px);
+  color: var(--ink);
+  white-space: nowrap;
+  box-shadow: 0 6px 22px rgba(233,143,176,.28);
+  pointer-events:none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: min(75vw, 280px);
+  white-space: normal;
+  text-align: center;
+  line-height:1.3;
+}
+.speech-bubble::after {
+  content:'';
+  position:absolute;
+  bottom:-12px;
+  left: 58%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top:8px solid var(--sakura-mid);
+}
+.speech-bubble::before {
+  content:'';
+  position:absolute;
+  bottom:-9px;
+  left: 58%;
+  transform:translateX(-50%);
+  border:5px solid transparent;
+  border-top:7px solid rgba(255,250,248,0.97);
+  z-index:1;
+}
+.speech-bubble.visible {
+  opacity:1;
+  transform: translateX(-60%) translateY(calc(-100% - 8px));
+}
+
+/* ---------- petals ---------- */
+.petals{ position:absolute; inset:0; pointer-events:none; z-index:3; overflow:hidden; }
+.petal{
+  position:absolute;
+  top:-5%;
+  border-radius:0 60% 0 60%;
+  animation-name:fall, drift;
+  animation-timing-function:linear, ease-in-out;
+  animation-iteration-count:infinite, infinite;
+}
+.petal--far{
+  background:linear-gradient(135deg,var(--sakura-light),var(--sakura-mid));
+  opacity:.55;
+  filter:blur(1px);
+}
+.petal--near{
+  background:linear-gradient(135deg,var(--sakura-mid),var(--sakura-deep));
+  opacity:.9;
+}
+@keyframes fall{
+  from{ transform:translateY(-10vh) rotate(0deg); }
+  to{ transform:translateY(110vh) rotate(360deg); }
+}
+@keyframes drift{
+  0%,100%{ margin-left:0; }
+  50%{ margin-left:30px; }
+}
+@media (prefers-reduced-motion:reduce){ .petal{ display:none; } }
+
+/* ---------- fireflies ---------- */
+.fireflies{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.firefly{
+  position:absolute;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 6px 2px rgba(244,213,141,.7);
+  animation:fireflyFloat 5s ease-in-out infinite;
+}
+@keyframes fireflyFloat{
+  0%,100%{ opacity:.15; transform:scale(.8) translateY(0) translateX(0); }
+  50%{ opacity:.9; transform:scale(1.15) translateY(-10px) translateX(4px); }
+}
+
+.vignette{
+  position:absolute; inset:0;
+  z-index:4;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 45%, rgba(91,64,52,.22) 100%);
+}
+
+/* ---------- letter button ---------- */
+.letter-btn{
+  position:relative;
+  z-index:7;
+  margin:0 auto clamp(20px, 4vh, 44px);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 26px;
+  border:none;
+  border-radius:999px;
+  background:rgba(255,250,244,.88);
+  backdrop-filter:blur(6px);
+  box-shadow:0 6px 22px rgba(180,110,130,.28), 0 0 0 1px rgba(255,255,255,.5) inset;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:16px;
+  color:var(--ink);
+  cursor:pointer;
+  transition:transform .25s ease, box-shadow .25s ease;
+  animation:glow 3.6s ease-in-out infinite;
+}
+.letter-btn:hover, .letter-btn:focus-visible{
+  transform:translateY(-2px) scale(1.02);
+  box-shadow:0 10px 28px rgba(180,110,130,.38), 0 0 0 1px rgba(255,255,255,.6) inset;
+}
+@keyframes glow{
+  0%,100%{ box-shadow:0 6px 22px rgba(180,110,130,.22), 0 0 0 1px rgba(255,255,255,.5) inset; }
+  50%{ box-shadow:0 6px 26px rgba(233,143,176,.45), 0 0 0 1px rgba(255,255,255,.6) inset; }
+}
+.letter-btn svg{ width:22px; height:22px; flex:none; }
+@media (prefers-reduced-motion:no-preference){
+  .letter-btn svg{ animation:envWiggle 4s ease-in-out infinite; transform-origin:50% 70%; }
+}
+@keyframes envWiggle{
+  0%,100%{ transform:rotate(0deg); }
+  50%{ transform:rotate(-4deg); }
+}
+
+/* ---------- overlay & card ---------- */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(91,64,52,.25);
+  backdrop-filter:blur(4px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .35s ease;
+  z-index:50;
+  padding:20px;
+}
+.overlay.visible{ opacity:1; visibility:visible; }
+
+.card{
+  position:relative;
+  width:min(420px, 100%);
+  background:
+    repeating-linear-gradient(135deg, rgba(91,64,52,.025) 0 2px, transparent 2px 10px),
+    var(--card-bg);
+  border-radius:22px;
+  padding:34px 28px 30px;
+  text-align:center;
+  box-shadow:0 24px 60px rgba(91,64,52,.25);
+  transform:translateY(14px) scale(.97);
+  transition:transform .35s ease;
+  overflow:hidden;
+}
+.overlay.visible .card{ transform:translateY(0) scale(1); }
+
+.card-decor{
+  position:absolute;
+  bottom:10px; right:14px;
+  width:38px; height:38px;
+  opacity:.14;
+  pointer-events:none;
+}
+
+.card-question{ transition:opacity .25s ease, transform .25s ease; }
+.card-question.fade-out{ opacity:0; transform:translateY(-6px) scale(.98); }
+.card-question p{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:24px;
+  margin:6px 0 26px;
+  color:var(--ink);
+}
+.card-question .envelope-mini{
+  width:64px; height:64px;
+  margin:0 auto 14px;
+}
+@media (prefers-reduced-motion:no-preference){
+  .card-question .envelope-mini{ animation:miniWiggle 3.6s ease-in-out infinite; transform-origin:50% 75%; }
+}
+@keyframes miniWiggle{
+  0%,100%{ transform:rotate(0deg); }
+  50%{ transform:rotate(-3deg); }
+}
+.card-actions{ display:flex; gap:14px; justify-content:center; }
+.btn{
+  font-family:'Quicksand',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  padding:11px 28px;
+  border-radius:999px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:transform .2s ease, opacity .2s ease;
+}
+.btn:hover{ transform:translateY(-1px); }
+.btn-yes{ background:var(--sakura-deep); color:#fff; box-shadow:0 8px 18px rgba(233,143,176,.45); }
+.btn-no{ background:transparent; border-color:var(--sakura-mid); color:var(--ink-soft); }
+
+.card-letter{ display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; }
+.card-letter .seal{ width:46px; height:46px; margin-bottom:10px; opacity:0; }
+.letter-text{ font-family:'Caveat',cursive; font-size:34px; line-height:1.35; color:var(--ink); margin:4px 0 10px; opacity:0; }
+.flourish{ width:120px; height:20px; margin:4px auto 14px; opacity:0; color:var(--sakura-deep); }
+.heart-tail{ display:inline-block; animation:beat 1.4s ease-in-out infinite; }
+@keyframes beat{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.18); } }
+
+.card-letter.reveal .seal{ animation:sealPop .6s ease forwards; }
+.card-letter.reveal .letter-text{ animation:fadeUp .6s .15s ease forwards; }
+.card-letter.reveal .flourish{ animation:fadeUp .6s .35s ease forwards; }
+.card-letter.reveal .close-btn{ animation:fadeUp .5s .5s ease forwards; opacity:0; }
+@keyframes sealPop{
+  0%{ transform:scale(.4) rotate(-15deg); opacity:0; }
+  60%{ transform:scale(1.15) rotate(5deg); opacity:1; }
+  100%{ transform:scale(1) rotate(0); opacity:1; }
+}
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+
+.close-btn{
+  margin-top:4px;
+  background:none;
+  border:none;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  color:var(--ink-soft);
+  cursor:pointer;
+  text-decoration:underline;
+  text-decoration-color:var(--sakura-mid);
+}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  bottom:max(26px, env(safe-area-inset-bottom));
+  left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:rgba(91,64,52,.92);
+  color:#fff8f2;
+  font-family:'Quicksand',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  padding:12px 20px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease;
+  z-index:60;
+  max-width:88vw;
+  text-align:center;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+.burst{ position:fixed; inset:0; pointer-events:none; z-index:55; }
+.burst-heart{ position:absolute; bottom:-5%; font-size:18px; opacity:.9; animation:floatUp linear forwards; }
+@keyframes floatUp{ to{ transform:translateY(-115vh) translateX(var(--bx,0px)) rotate(20deg); opacity:0; } }
+
+@media (max-width:480px){
+  .letter-text{ font-size:28px; }
+  .card{ padding:28px 20px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="sky-deco" id="skyDeco">
+    <div class="moon"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+
+  <div class="ground-glow"></div>
+  <div class="label">тихий сад · вечер</div>
+
+  <div class="fireflies" id="fireflies"></div>
+  <div class="petals" id="petals"></div>
+
+  <div class="illustration-wrap" id="catWrap">
+
+    <!-- Речевое облачко -->
+    <div class="speech-bubble" id="speechBubble"></div>
+
+    <svg class="illustration" viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Котёнок отдыхает под цветущей сакурой">
+      <!-- ground -->
+      <ellipse cx="400" cy="585" rx="360" ry="34" fill="#e7c9b6" opacity="0.55"/>
+      <path d="M0,605 Q200,580 400,600 T800,595 V620 H0 Z" fill="#dab48e" opacity="0.5"/>
+
+      <!-- grass blades -->
+      <g stroke="#9fae7a" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.55">
+        <path class="blade" d="M560,600 Q565,575 558,558"/>
+        <path class="blade" d="M578,602 Q585,580 580,562" style="animation-delay:-1.2s"/>
+        <path class="blade" d="M600,604 Q605,582 598,566" style="animation-delay:-2.4s"/>
+        <path class="blade" d="M120,608 Q126,588 119,572" style="animation-delay:-0.6s"/>
+        <path class="blade" d="M745,602 Q750,580 743,564" style="animation-delay:-1.8s"/>
+      </g>
+
+      <!-- tree -->
+      <g class="tree-sway">
+        <path d="M150,610 C140,520 165,470 150,430 C140,400 175,390 185,360 C170,330 190,300 215,290"
+              fill="none" stroke="#7a5240" stroke-width="16" stroke-linecap="round"/>
+        <path d="M185,420 C150,400 120,410 95,395" fill="none" stroke="#7a5240" stroke-width="10" stroke-linecap="round"/>
+        <path d="M170,460 C200,450 225,460 250,445" fill="none" stroke="#7a5240" stroke-width="9" stroke-linecap="round"/>
+
+        <g opacity="0.95">
+          <circle cx="120" cy="380" r="58" fill="var(--sakura-light)"/>
+          <circle cx="190" cy="345" r="70" fill="var(--sakura-mid)"/>
+          <circle cx="260" cy="370" r="56" fill="var(--sakura-light)"/>
+          <circle cx="95" cy="320" r="46" fill="var(--sakura-mid)"/>
+          <circle cx="220" cy="290" r="52" fill="var(--sakura-deep)" opacity="0.55"/>
+          <circle cx="155" cy="300" r="50" fill="var(--sakura-light)"/>
+          <circle cx="290" cy="320" r="40" fill="var(--sakura-mid)"/>
+          <circle cx="60" cy="370" r="34" fill="var(--sakura-light)"/>
+        </g>
+        <g fill="var(--sakura-deep)" opacity="0.5">
+          <circle cx="130" cy="360" r="3"/><circle cx="170" cy="330" r="3"/>
+          <circle cx="210" cy="360" r="3"/><circle cx="240" cy="300" r="3"/>
+          <circle cx="100" cy="330" r="3"/><circle cx="270" cy="345" r="3"/>
+          <circle cx="150" cy="380" r="3"/>
+        </g>
+      </g>
+
+      <!-- resting kitten -->
+      <g class="cat-breathe" id="catGroup">
+
+        <ellipse cx="420" cy="600" rx="48" ry="10" fill="#5b4034" opacity="0.12"/>
+
+        <!-- АНИМИРОВАННЫЙ ХВОСТИК -->
+        <g class="tail-anim">
+          <path d="M468,565 C545,560 565,495 515,455 C495,438 463,452 466,478 C468,500 495,500 500,480"
+                fill="var(--cat-fur)"/>
+          <path d="M515,455 C495,438 463,452 466,478" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" opacity="0.4"/>
+          <circle cx="473" cy="467" r="12" fill="#fff"/>
+          <!-- полоски на хвосте -->
+          <path d="M490,465 C500,462 508,466 512,470" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+          <path d="M478,490 C487,488 494,492 497,496" fill="none" stroke="var(--cat-fur-dark)" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        </g>
+
+        <!-- body -->
+        <ellipse cx="408" cy="558" rx="60" ry="48" fill="var(--cat-fur)"/>
+        <ellipse cx="410" cy="576" rx="36" ry="24" fill="var(--cat-cream)"/>
+
+        <!-- head -->
+        <circle cx="368" cy="513" r="42" fill="var(--cat-fur)"/>
+        <ellipse cx="366" cy="526" rx="20" ry="14" fill="var(--cat-cream)"/>
+
+        <!-- ears -->
+        <path d="M338,488 L320,440 L368,476 Z" fill="var(--cat-fur)"/>
+        <path d="M340,480 L330,455 L358,474 Z" fill="var(--sakura-mid)" opacity="0.7"/>
+        <path d="M396,480 L412,434 L424,478 Z" fill="var(--cat-fur)"/>
+        <path d="M400,476 L411,452 L418,476 Z" fill="var(--sakura-mid)" opacity="0.7"/>
+
+        <!-- soft tabby strokes -->
+        <g stroke="var(--cat-fur-dark)" stroke-width="3" stroke-linecap="round" opacity="0.3" fill="none">
+          <path d="M345,478 q4,-14 14,-18"/>
+          <path d="M395,478 q-4,-14 -14,-18"/>
+          <path d="M388,532 q10,8 4,22"/>
+          <path d="M404,528 q10,10 2,24"/>
+        </g>
+
+        <!-- ЖИВЫЕ ГЛАЗА -->
+        <!-- Левый глаз -->
+        <g id="leftEye">
+          <!-- белок -->
+          <ellipse cx="356" cy="510" rx="10" ry="9" fill="white"/>
+          <!-- радужка -->
+          <ellipse cx="356" cy="510" rx="7.5" ry="7.5" fill="#7ab8a0"/>
+          <!-- зрачок с анимацией моргания -->
+          <ellipse class="pupil-l" cx="356" cy="510" rx="4" ry="5.5" fill="#2a1a10"/>
+          <!-- блик 1 -->
+          <circle cx="353" cy="507" r="1.8" fill="white" opacity="0.9"/>
+          <!-- блик 2 -->
+          <circle cx="359" cy="512" r="1" fill="white" opacity="0.6"/>
+        </g>
+        <!-- Правый глаз -->
+        <g id="rightEye">
+          <!-- белок -->
+          <ellipse cx="382" cy="510" rx="10" ry="9" fill="white"/>
+          <!-- радужка -->
+          <ellipse cx="382" cy="510" rx="7.5" ry="7.5" fill="#7ab8a0"/>
+          <!-- зрачок -->
+          <ellipse class="pupil-r" cx="382" cy="510" rx="4" ry="5.5" fill="#2a1a10"/>
+          <!-- блик 1 -->
+          <circle cx="379" cy="507" r="1.8" fill="white" opacity="0.9"/>
+          <!-- блик 2 -->
+          <circle cx="385" cy="512" r="1" fill="white" opacity="0.6"/>
+        </g>
+
+        <!-- nose -->
+        <path d="M362,528 q6,-4 12,0 q-2,7 -6,7 q-4,0 -6,-7 Z" fill="var(--sakura-deep)"/>
+
+        <!-- рот -->
+        <path d="M368,535 q-4,4 -7,3" fill="none" stroke="var(--cat-fur-dark)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <path d="M368,535 q4,4 7,3" fill="none" stroke="var(--cat-fur-dark)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+
+        <!-- whiskers -->
+        <g stroke="#cbb6a6" stroke-width="1.4" opacity="0.7">
+          <path d="M335,528 q-22,-2 -34,2"/>
+          <path d="M335,534 q-22,6 -32,12"/>
+          <path d="M401,528 q22,-2 34,2"/>
+          <path d="M401,534 q22,6 32,12"/>
+        </g>
+
+        <!-- cheeks -->
+        <circle cx="344" cy="522" r="6" fill="var(--sakura-mid)" opacity="0.55"/>
+        <circle cx="392" cy="522" r="6" fill="var(--sakura-mid)" opacity="0.55"/>
+
+        <!-- paws -->
+        <ellipse cx="380" cy="590" rx="15" ry="10" fill="var(--cat-cream)"/>
+        <ellipse cx="426" cy="590" rx="15" ry="10" fill="var(--cat-cream)"/>
+      </g>
+
+      <g fill="var(--sakura-mid)" opacity="0.85">
+        <ellipse cx="430" cy="540" rx="6" ry="4" transform="rotate(30 430 540)"/>
+        <ellipse cx="330" cy="555" rx="5" ry="3.5" transform="rotate(-20 330 555)"/>
+        <ellipse cx="470" cy="600" rx="6" ry="4" transform="rotate(60 470 600)"/>
+      </g>
+
+      <g opacity="0.8">
+        <circle cx="640" cy="560" r="4" fill="#fff"/>
+        <circle cx="652" cy="555" r="4" fill="#fff"/>
+        <circle cx="646" cy="566" r="4" fill="#fff"/>
+        <circle cx="648" cy="560" r="3" fill="var(--gold)"/>
+        <circle cx="710" cy="580" r="4" fill="#fff"/>
+        <circle cx="720" cy="575" r="4" fill="#fff"/>
+        <circle cx="715" cy="586" r="4" fill="#fff"/>
+        <circle cx="716" cy="580" r="3" fill="var(--gold)"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="tap-hint">нажми на котика 🐾</div>
+
+  <button class="letter-btn" id="letterBtn" type="button" aria-haspopup="dialog">
+    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="10" width="40" height="28" rx="4" fill="var(--sakura-light)" stroke="var(--sakura-deep)" stroke-width="2"/>
+      <path d="M4,12 L24,30 L44,12" fill="none" stroke="var(--sakura-deep)" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="24" cy="24" r="5" fill="var(--sakura-deep)"/>
+      <path d="M24,21 c-1.6,-2 -5,-0.6 -3,2 c1,1.2 3,2.8 3,2.8 s2,-1.6 3,-2.8 c2,-2.6 -1.4,-4 -3,-2 Z" fill="#fff"/>
+    </svg>
+    <span>Тебе пришло письмо</span>
+  </button>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Письмо">
+  <div class="card">
+    <svg class="card-decor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="24" cy="30" rx="11" ry="9" fill="var(--ink)"/>
+      <ellipse cx="12" cy="18" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="22" cy="12" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="34" cy="14" rx="5" ry="6" fill="var(--ink)"/>
+      <ellipse cx="40" cy="22" rx="4.5" ry="5.5" fill="var(--ink)"/>
+    </svg>
+
+    <div class="card-question" id="cardQuestion">
+      <svg class="envelope-mini" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="10" width="40" height="28" rx="4" fill="var(--sakura-light)" stroke="var(--sakura-deep)" stroke-width="2"/>
+        <path d="M4,12 L24,30 L44,12" fill="none" stroke="var(--sakura-deep)" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      <p>Открыть письмо?</p>
+      <div class="card-actions">
+        <button class="btn btn-yes" id="btnYes">Да</button>
+        <button class="btn btn-no" id="btnNo">Нет</button>
+      </div>
+    </div>
+
+    <div class="card-letter" id="cardLetter" hidden>
+      <svg class="seal" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" fill="var(--sakura-deep)"/>
+        <path d="M24,16 c-3,-4 -11,-1.5 -7,4.5 c2.4,3 7,6.5 7,6.5 s4.6,-3.5 7,-6.5 c4,-6 -4,-8.5 -7,-4.5 Z" fill="#fff"/>
+      </svg>
+      <p class="letter-text">Ты самый любимый котик<br>на свете,<br>я всегда рядом,<br>мой кроль <span class="heart-tail">♥</span></p>
+      <svg class="flourish" viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M5,10 C35,2 45,18 60,10 C75,2 85,18 115,10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="60" cy="6" r="2.4" fill="currentColor"/>
+      </svg>
+      <button class="close-btn" id="closeBtn" type="button">закрыть</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="burst" id="burst"></div>
+
+<script>
+(function(){
+  // Лепестки
+  var petalsHost = document.getElementById('petals');
+  var nFar = window.innerWidth < 600 ? 10 : 16;
+  var nNear = window.innerWidth < 600 ? 8 : 12;
+  function makePetal(kind){
+    var p = document.createElement('div');
+    p.className = 'petal ' + kind;
+    var left = Math.random()*100;
+    var size = kind === 'petal--far' ? (6+Math.random()*5) : (9+Math.random()*8);
+    var fallDur = kind === 'petal--far' ? (14+Math.random()*10) : (8+Math.random()*8);
+    var driftDur = 3 + Math.random()*3;
+    var delay = Math.random()*14;
+    p.style.left = left + 'vw';
+    p.style.width = size+'px';
+    p.style.height = size+'px';
+    p.style.animationDuration = fallDur+'s, '+driftDur+'s';
+    p.style.animationDelay = (-delay)+'s, '+(Math.random()*2)+'s';
+    petalsHost.appendChild(p);
   }
-}
+  for (var i=0;i<nFar;i++) makePetal('petal--far');
+  for (var i2=0;i2<nNear;i2++) makePetal('petal--near');
 
-// ── SCORE BARS ──
-function renderBars(id, score, color) {
-  const c = document.getElementById(id);
-  c.innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    const b = document.createElement('div');
-    b.className = 'bar';
-    const h = 3 + i * 2;
-    b.style.height = h + 'px';
-    b.style.background = i <= score ? color : 'rgba(255,255,255,0.05)';
-    c.appendChild(b);
+  // Светлячки
+  var fireHost = document.getElementById('fireflies');
+  for (var j=0;j<14;j++){
+    var f = document.createElement('div');
+    f.className = 'firefly';
+    f.style.left = (Math.random()*100)+'vw';
+    f.style.top = (35+Math.random()*55)+'vh';
+    f.style.animationDelay = (Math.random()*4)+'s';
+    f.style.animationDuration = (4+Math.random()*3)+'s';
+    fireHost.appendChild(f);
   }
-}
 
-function scoreColor(s) {
-  if (s >= 8) return 'var(--green)';
-  if (s >= 5) return 'var(--yellow)';
-  return 'var(--red)';
-}
-function speedToScore(mbps) {
-  if (mbps >= 100) return 10; if (mbps >= 80) return 9;
-  if (mbps >= 60)  return 8;  if (mbps >= 40) return 7;
-  if (mbps >= 25)  return 6;  if (mbps >= 15) return 5;
-  if (mbps >= 8)   return 4;  if (mbps >= 4)  return 3;
-  if (mbps >= 1)   return 2;  return 1;
-}
+  // Звёзды
+  var skyDeco = document.getElementById('skyDeco');
+  for (var k=0;k<13;k++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = (Math.random()*100)+'vw';
+    s.style.top = (2+Math.random()*34)+'vh';
+    s.style.animationDelay = (Math.random()*3.4)+'s';
+    skyDeco.appendChild(s);
+  }
 
-// ── SIGNAL DOTS ──
-function setSignal(mbps) {
-  const d = document.getElementById('signal-dots');
-  d.className = 'signal-dots';
-  if (mbps >= 30)     d.classList.add('good');
-  else if (mbps >= 8) d.classList.add('ok');
-  else                d.classList.add('bad');
-}
-
-// ── COUNTRY FLAG ──
-function getFlagEmoji(countryCode) {
-  if (!countryCode || countryCode.length !== 2) return '🌐';
-  const base = 127397;
-  return String.fromCodePoint(...countryCode.toUpperCase().split('').map(c => base + c.charCodeAt(0)));
-}
-
-// ── VPN CHECK ──
-async function checkVPN() {
-  const card   = document.getElementById('vpn-card');
-  const pill   = document.getElementById('status-pill');
-  const stxt   = document.getElementById('status-text');
-  const icon   = document.getElementById('vpn-icon');
-  const value  = document.getElementById('vpn-value');
-  const ipText = document.getElementById('vpn-ip-text');
-  const flagEl = document.getElementById('vpn-flag');
-  const locCard = document.getElementById('location-card');
-  const locGrid = document.getElementById('location-grid');
-
-  card.className = 'vpn-card check';
-  pill.className = 'status-pill check';
-  stxt.textContent = 'Анализируем...';
-  icon.textContent = '🔍';
-  value.textContent = 'Анализируем...';
-  ipText.textContent = '—';
-  flagEl.textContent = '';
-
-  let ipData = null;
-
-  // API список — пробуем по очереди, все поддерживают CORS
-  const tryApis = [
-    async () => {
-      // ip-api.com — самый надёжный, HTTP (работает везде)
-      const r = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,isp,org,query,proxy,hosting', {
-        signal: AbortSignal.timeout(6000)
-      });
-      const d = await r.json();
-      if (d.status !== 'success') return null;
-      return {
-        ip: d.query, country: d.country, countryCode: d.countryCode,
-        city: d.city, region: d.regionName, isp: d.isp, org: d.org || d.isp,
-        proxy: d.proxy || d.hosting
-      };
-    },
-    async () => {
-      // freeipapi.com — HTTPS, CORS открыт
-      const r = await fetch('https://freeipapi.com/api/json', {
-        signal: AbortSignal.timeout(6000)
-      });
-      const d = await r.json();
-      if (!d.ipAddress) return null;
-      return {
-        ip: d.ipAddress, country: d.countryName, countryCode: d.countryCode,
-        city: d.cityName, region: d.regionName, isp: d.ipType || '—', org: d.ipType || '',
-        proxy: d.ipType === 'VPN' || d.ipType === 'Proxy' || d.ipType === 'Hosting'
-      };
-    },
-    async () => {
-      // ipwho.is — HTTPS, без ключа
-      const r = await fetch('https://ipwho.is/', {
-        signal: AbortSignal.timeout(6000)
-      });
-      const d = await r.json();
-      if (!d.success) return null;
-      return {
-        ip: d.ip, country: d.country, countryCode: d.country_code,
-        city: d.city, region: d.region, isp: d.connection?.isp || '—',
-        org: d.connection?.org || '',
-        proxy: false
-      };
-    },
-    async () => {
-      // ipify — только IP, без геолокации
-      const r = await fetch('https://api.ipify.org?format=json', {
-        signal: AbortSignal.timeout(5000)
-      });
-      const d = await r.json();
-      if (!d.ip) return null;
-      return {
-        ip: d.ip, country: '—', countryCode: '',
-        city: '—', region: '—', isp: '—', org: '',
-        proxy: false
-      };
-    }
+  // ========== РЕЧЕВЫЕ ФРАЗОЧКИ ==========
+  var phrases = [
+    'Мяур, мама я люблю тебя 🐾',
+    'Ты такая милашка ✨',
+    'Спасибо, что ты есть! 💕',
+    'Мама это ты! И ты прекрасна! 🌸',
+    'Я так люблю тебя 💗',
+    'Оии! Мяруру ярярряммямямя 😸',
+    'Папа всегда рядом 🐈'
   ];
+  var phraseIndex = 0;
+  var bubbleTimer = null;
+  var bubble = document.getElementById('speechBubble');
+  var catWrap = document.getElementById('catWrap');
+  var catGroup = document.getElementById('catGroup');
+  var tapping = false;
 
-  for (const tryApi of tryApis) {
-    try {
-      const result = await tryApi();
-      if (result && result.ip) { ipData = result; break; }
-    } catch(e) { /* попробуем следующий */ }
-  }
-
-  if (!ipData) {
-    card.className = 'vpn-card off';
-    pill.className = 'status-pill off';
-    stxt.textContent = 'Нет доступа';
-    icon.textContent = '❌';
-    value.textContent = 'Все API недоступны';
-    ipText.textContent = 'Попробуйте переоткрыть файл в браузере';
-    locCard.style.display = 'none';
-    return false;
-  }
-
-  const vpnKeywords = ['vpn','proxy','hosting','cloud','datacenter','data center','server','vps',
-    'digitalocean','linode','vultr','amazon','google','microsoft','hetzner','ovh',
-    'mullvad','nordvpn','expressvpn','surfshark','dedicated','colocation','colo','cdp','cdn'];
-  const isVpn = ipData.proxy ||
-    vpnKeywords.some(kw => (ipData.org || '').toLowerCase().includes(kw));
-
-  const flag = getFlagEmoji(ipData.countryCode);
-  flagEl.textContent = flag;
-  ipText.textContent = `${ipData.ip}${ipData.city !== '—' ? ' · ' + ipData.city : ''}`;
-
-  if (isVpn) {
-    card.className = 'vpn-card on';
-    pill.className = 'status-pill on';
-    stxt.textContent = 'VPN Активен';
-    icon.textContent = '🔒';
-    value.textContent = 'Защищён';
-  } else {
-    card.className = 'vpn-card off';
-    pill.className = 'status-pill off';
-    stxt.textContent = 'VPN Выключен';
-    icon.textContent = '⚠️';
-    value.textContent = 'Открытое соединение';
-  }
-
-  locGrid.innerHTML = `
-    <div class="lc-item"><div class="lc-key">IP адрес</div><div class="lc-val mono-ip">${ipData.ip}</div></div>
-    <div class="lc-item"><div class="lc-key">Страна</div><div class="lc-val">${flag || '🌐'} ${ipData.country}</div></div>
-    <div class="lc-item"><div class="lc-key">Город</div><div class="lc-val">${ipData.city}</div></div>
-    <div class="lc-item"><div class="lc-key">Регион</div><div class="lc-val">${ipData.region}</div></div>
-    <div class="lc-item"><div class="lc-key">Провайдер</div><div class="lc-val">${(ipData.isp||'—').substring(0,22)}</div></div>
-    <div class="lc-item"><div class="lc-key">Статус</div><div class="lc-val" style="color:${isVpn?'var(--green)':'var(--red)'}">${isVpn?'🔒 VPN':'⚠️ Открыт'}</div></div>
-  `;
-  locCard.style.display = 'block';
-
-  return isVpn;
-}
-
-// ── SPEED MEASUREMENT ──
-function measureOnce() {
-  return new Promise(resolve => {
-    // Use multiple test images for better accuracy
-    const tests = [
-      { url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png', size: 80 },
-      { url: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Camponotus_flavomarginatus_ant.jpg', size: 90 },
-    ];
-    const test = tests[Math.floor(Math.random() * tests.length)];
-    const img = new Image();
-    const start = performance.now();
-    img.onload = () => {
-      const ms = performance.now() - start;
-      const mbps = ((test.size * 8) / (ms / 1000)) / 1000;
-      resolve(Math.min(mbps, 500));
-    };
-    img.onerror = () => resolve(null);
-    setTimeout(() => resolve(null), 9000);
-    img.src = test.url + '?_=' + Date.now();
+  catWrap.addEventListener('click', function(e){
+    // Не срабатывать если нажали на кнопку письма
+    if (e.target.closest('.letter-btn')) return;
+    showPhrase();
   });
-}
+  catWrap.addEventListener('touchend', function(e){
+    if (e.target.closest('.letter-btn')) return;
+    e.preventDefault();
+    showPhrase();
+  }, {passive:false});
 
-async function measureSpeed(samples = 3) {
-  const results = [];
-  for (let i = 0; i < samples; i++) {
-    const s = await measureOnce();
-    if (s) results.push(s);
+  function showPhrase(){
+    if (tapping) return;
+    tapping = true;
+    setTimeout(function(){ tapping = false; }, 400);
+
+    // Показываем фразу
+    var text = phrases[phraseIndex];
+    phraseIndex = (phraseIndex + 1) % phrases.length;
+    bubble.textContent = text;
+    bubble.classList.add('visible');
+
+    // Анимация котика
+    catGroup.classList.remove('cat-bounce');
+    void catGroup.offsetWidth; // reflow
+    catGroup.classList.add('cat-bounce');
+
+    // Прячем облачко через 2.8с
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(function(){
+      bubble.classList.remove('visible');
+    }, 2800);
+
+    // Мигание при тапе
+    triggerBlink();
   }
-  if (!results.length) return 0;
-  // Remove outlier if 3+ samples
-  if (results.length >= 3) {
-    results.sort((a,b) => a-b);
-    results.shift(); // remove lowest (could be warmup)
+
+  // Принудительное моргание при тапе
+  function triggerBlink(){
+    var pupils = document.querySelectorAll('.pupil-l, .pupil-r');
+    pupils.forEach(function(p){
+      p.style.animation = 'none';
+      p.style.transform = 'scaleY(0.08)';
+      setTimeout(function(){
+        p.style.transform = '';
+        setTimeout(function(){
+          p.style.animation = '';
+        }, 120);
+      }, 140);
+    });
   }
-  return results.reduce((a,b) => a+b, 0) / results.length;
-}
 
-async function checkSpeed(vpnActive) {
-  const netSpeedEl = document.getElementById('net-speed');
-  const netSubEl   = document.getElementById('net-sub');
-  const vpnSpeedEl = document.getElementById('vpn-speed');
-  const vpnSubEl   = document.getElementById('vpn-sub');
-  const pingEl     = document.getElementById('ping-val');
+  // ========== ПИСЬМО ==========
+  var overlay = document.getElementById('overlay');
+  var letterBtn = document.getElementById('letterBtn');
+  var cardQuestion = document.getElementById('cardQuestion');
+  var cardLetter = document.getElementById('cardLetter');
+  var btnYes = document.getElementById('btnYes');
+  var btnNo = document.getElementById('btnNo');
+  var closeBtn = document.getElementById('closeBtn');
+  var toast = document.getElementById('toast');
+  var burst = document.getElementById('burst');
+  var toastTimer;
 
-  // Skeleton loading
-  netSpeedEl.innerHTML = '<span style="font-size:13px;color:var(--muted2)">Замер...</span>';
-  vpnSpeedEl.innerHTML = '<span style="font-size:13px;color:var(--muted2)">Замер...</span>';
-
-  // Ping via multiple endpoints
-  const pingTargets = [
-    'https://1.1.1.1/cdn-cgi/trace',
-    'https://8.8.8.8/generate_204',
-  ];
-  let bestPing = 9999;
-  for (const target of pingTargets) {
-    const start = performance.now();
-    try {
-      await fetch(target, { mode:'no-cors', signal: AbortSignal.timeout(3000), cache:'no-store' });
-      const p = Math.round(performance.now() - start);
-      if (p < bestPing) bestPing = p;
-    } catch(e) {
-      const p = Math.round(performance.now() - start);
-      if (p < bestPing) bestPing = p;
+  function resetCard(){
+    cardQuestion.hidden = false;
+    cardQuestion.classList.remove('fade-out');
+    cardLetter.hidden = true;
+    cardLetter.classList.remove('reveal');
+  }
+  function openOverlay(){
+    resetCard();
+    overlay.classList.add('visible');
+  }
+  function closeOverlay(){
+    overlay.classList.remove('visible');
+  }
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function heartBurst(){
+    var count = window.innerWidth < 600 ? 10 : 16;
+    var glyphs = ['♥','♥','✿'];
+    for (var k2=0;k2<count;k2++){
+      var h = document.createElement('div');
+      h.className = 'burst-heart';
+      h.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+      h.style.left = (10+Math.random()*80)+'vw';
+      h.style.setProperty('--bx', (Math.random()*60-30)+'px');
+      h.style.color = Math.random() > 0.5 ? '#e98fb0' : '#f4d58d';
+      h.style.animationDuration = (3.5+Math.random()*2)+'s';
+      burst.appendChild(h);
+      (function(el){ setTimeout(function(){ el.remove(); }, 6000); })(h);
     }
   }
-  const ping = bestPing === 9999 ? 0 : bestPing;
 
-  if (ping > 0) {
-    pingEl.textContent = ping + ' ms';
-    pingEl.style.color = ping < 50 ? 'var(--green)' : ping < 120 ? 'var(--yellow)' : 'var(--red)';
-    updatePingGraph(ping);
-  }
+  letterBtn.addEventListener('click', openOverlay);
 
-  // Speed test (2 samples — balance accuracy vs time)
-  const netMbps = await measureSpeed(2);
+  btnYes.addEventListener('click', function(){
+    cardQuestion.classList.add('fade-out');
+    setTimeout(function(){
+      cardQuestion.hidden = true;
+      cardLetter.hidden = false;
+      cardLetter.classList.add('reveal');
+      heartBurst();
+    }, 260);
+  });
 
-  if (netMbps > 0) {
-    const r = netMbps >= 10 ? Math.round(netMbps) : netMbps.toFixed(1);
-    netSpeedEl.innerHTML = `${r}<span class="mc-unit"> Мб/с</span>`;
-    netSubEl.textContent = netMbps >= 80 ? '🚀 Молния' : netMbps >= 40 ? '✅ Отлично' : netMbps >= 15 ? '👍 Хорошо' : netMbps >= 5 ? '😐 Нормально' : '🐌 Медленно';
-    const ns = speedToScore(netMbps);
-    const nc = scoreColor(ns);
-    document.getElementById('net-score').innerHTML = `<span style="color:${nc}">${ns}</span><span class="score-denom">/10</span>`;
-    renderBars('net-bars', ns, nc);
-    setSignal(netMbps);
-  } else {
-    netSpeedEl.innerHTML = '<span style="font-size:12px;color:var(--red)">Ошибка</span>';
-    netSubEl.textContent = 'Нет доступа';
-  }
+  btnNo.addEventListener('click', function(){
+    closeOverlay();
+    showToast('Хорошо, я подожду тебя 🐾');
+  });
 
-  // VPN Speed
-  if (vpnActive && netMbps > 0) {
-    const overhead = 0.6 + Math.random() * 0.25;
-    const vpnMbps = netMbps * overhead;
-    const vr = vpnMbps >= 10 ? Math.round(vpnMbps) : vpnMbps.toFixed(1);
-    vpnSpeedEl.innerHTML = `${vr}<span class="mc-unit"> Мб/с</span>`;
-    vpnSubEl.textContent = overhead > 0.8 ? '✅ Быстрый сервер' : overhead > 0.65 ? '👍 Нормальный' : '⚠️ Медленный';
-    const vs = speedToScore(vpnMbps);
-    const vc = scoreColor(vs);
-    document.getElementById('vpn-score').innerHTML = `<span style="color:${vc}">${vs}</span><span class="score-denom">/10</span>`;
-    renderBars('vpn-bars', vs, vc);
-  } else if (!vpnActive) {
-    vpnSpeedEl.innerHTML = '<span style="font-size:11px;color:var(--muted2)">VPN выкл</span>';
-    vpnSubEl.textContent = 'Включите VPN';
-    document.getElementById('vpn-score').innerHTML = `<span style="color:var(--muted)">—</span><span class="score-denom">/10</span>`;
-    renderBars('vpn-bars', 0, 'var(--muted)');
-  } else {
-    vpnSpeedEl.innerHTML = '<span style="font-size:12px;color:var(--red)">Ошибка</span>';
-  }
-}
+  closeBtn.addEventListener('click', closeOverlay);
 
-// ── LOADING SCREEN ──
-async function showLoadingScreen(steps) {
-  const bar = document.getElementById('loading-bar');
-  const txt = document.getElementById('loading-text');
-  const total = steps.length;
-  for (let i = 0; i < total; i++) {
-    txt.textContent = steps[i];
-    bar.style.width = ((i+1) / total * 100) + '%';
-    await delay(steps[i].includes('...') ? 400 : 300);
-  }
-}
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  overlay.addEventListener('click', function(e){
+    if (e.target === overlay) closeOverlay();
+  });
 
-// ── MAIN CHECK ──
-let isChecking = false;
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeOverlay();
+  });
 
-async function checkAll() {
-  if (isChecking) return;
-  isChecking = true;
+  // Скрываем hint после первого тапа
+  var hint = document.querySelector('.tap-hint');
+  catWrap.addEventListener('click', function(){
+    if (hint) { hint.style.opacity = '0'; hint.style.transition = 'opacity 0.5s'; }
+  }, {once:true});
 
-  const btn    = document.getElementById('main-btn');
-  const spinner = document.getElementById('btn-spinner');
-  const btnTxt = document.getElementById('btn-text');
-  const smBtn  = document.getElementById('refresh-sm');
-
-  btn.disabled = true;
-  btn.classList.add('loading');
-  smBtn.disabled = true;
-  btnTxt.textContent = 'Проверяем...';
-
-  try {
-    const vpnActive = await checkVPN();
-    await checkSpeed(vpnActive);
-
-    const vpnCard = document.getElementById('vpn-card');
-    if (vpnCard.classList.contains('on')) {
-      showToast('🔒 VPN обнаружен — соединение защищено');
-    } else {
-      showToast('⚠️ VPN не найден — вы открыты');
-    }
-  } catch(e) {
-    showToast('❌ Ошибка проверки. Попробуйте снова');
-  }
-
-  btn.disabled = false;
-  btn.classList.remove('loading');
-  smBtn.disabled = false;
-  btnTxt.textContent = 'Проверить снова';
-  isChecking = false;
-}
-
-// ── INIT ──
-async function init() {
-  const loading = document.getElementById('loading-screen');
-  const app     = document.getElementById('app');
-
-  await showLoadingScreen([
-    'Инициализация...', 'Загрузка интерфейса...', 'Подключение к API...', 'Готово!'
-  ]);
-
-  // Run checks in parallel for speed
-  const vpnPromise   = checkVPN();
-  const loadingDone  = delay(400);
-
-  await Promise.all([loadingDone]);
-
-  loading.classList.add('hidden');
-  app.style.opacity = '1';
-
-  const vpnActive = await vpnPromise;
-  await checkSpeed(vpnActive);
-
-  setTimeout(() => loading.style.display = 'none', 600);
-}
-
-init();
+})();
 </script>
 </body>
 </html>
